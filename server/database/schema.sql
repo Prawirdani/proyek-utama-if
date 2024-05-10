@@ -16,7 +16,7 @@ CREATE TABLE kategori_menu (
 	deleted_at TIMESTAMPTZ
 );
 
-CREATE TABLE menu (
+CREATE TABLE menus (
 	id SERIAL PRIMARY KEY,
 	nama VARCHAR(100) NOT NULL,
 	deskripsi TEXT,
@@ -70,7 +70,7 @@ CREATE TABLE pesanan(
 	subtotal BIGINT NOT NULL,	
 	status_pesanan StatusPesanan NOT NULL DEFAULT 'Diproses',
 	CONSTRAINT fk_transaksi_id FOREIGN KEY(transaksi_id) REFERENCES transaksi(id),
-	CONSTRAINT fk_menu_id FOREIGN KEY(menu_id) REFERENCES menu(id)
+	CONSTRAINT fk_menu_id FOREIGN KEY(menu_id) REFERENCES menus(id)
 );
 
 CREATE TABLE pembayaran (
