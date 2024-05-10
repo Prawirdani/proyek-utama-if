@@ -1,0 +1,26 @@
+app:
+  Version: 1.0.0
+  Port: 42069 
+  Environment: dev
+
+context:
+  timeout: 5 # in seconds
+
+db:
+  Username: postgres
+  Password: 
+  Host: localhost
+  Port: 5432
+  Name: db-name 
+  MinConns: 1
+  MaxConns: 5
+  MaxConnLifetime: 60 # In Minute
+
+cors:
+  AllowedOrigins: localhost:3000
+  Credentials: true
+
+token:
+  SecretKey: secret
+  Expiry: 6 # In Hour
+  AccessCookieName: accessToken

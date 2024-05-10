@@ -1,0 +1,6 @@
+tmp
+.env
+/cmd/api/bin
+/config/config.yml
+.env
+
