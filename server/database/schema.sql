@@ -21,7 +21,7 @@ CREATE TABLE menu (
 	nama VARCHAR(100) NOT NULL,
 	deskripsi TEXT,
 	harga BIGINT NOT NULL,
-	kategori_id INTEGER,
+	kategori_id INTEGER NOT NULL,
 	url_foto TEXT,
 	deleted_at TIMESTAMPTZ,	
 	created_at TIMESTAMPTZ DEFAULT current_timestamp,
