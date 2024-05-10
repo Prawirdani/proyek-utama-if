@@ -1,5 +1,5 @@
 CREATE TYPE Role AS ENUM ('Kasir', 'Manajer');
-CREATE TABLE pengguna (
+CREATE TABLE users (
 	id SERIAL PRIMARY KEY,
 	nama VARCHAR(100) NOT NULL,
 	username VARCHAR(100) UNIQUE NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE transaksi (
 	tipe_transaksi TipeTransaksi NOT NULL,
 	catatan TEXT,
 	waktu_transaksi TIMESTAMPTZ DEFAULT current_timestamp,
-	CONSTRAINT fk_kasir_id FOREIGN KEY(kasir_id) REFERENCES pengguna(id),
+	CONSTRAINT fk_kasir_id FOREIGN KEY(kasir_id) REFERENCES users(id),
 	CONSTRAINT fk_meja_id FOREIGN KEY(meja_id) REFERENCES meja(id)
 );
 
