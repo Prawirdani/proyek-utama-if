@@ -3,7 +3,6 @@ package entity
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/pkg/httputil"
 	"github.com/prawirdani/golang-restapi/pkg/utils"
@@ -14,11 +13,20 @@ var (
 	ErrorWrongCredentials = httputil.ErrUnauthorized("Check your credentials")
 )
 
+type UserRole string
+
+const (
+	Kasir   UserRole = "Kasir"
+	Manajer UserRole = "Manajer"
+)
+
 type User struct {
-	ID        uuid.UUID `validate:"required,uuid"`
-	Name      string    `validate:"required"`
-	Email     string    `validate:"required,email"`
-	Password  string    `validate:"required,min=6"`
+	ID        int
+	Nama      string   `validate:"required"`
+	Username  string   `validate:"required"`
+	Password  string   `validate:"required,min=6"`
+	Active    bool     `json:"active"`
+	Role      UserRole `json:"role"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -26,9 +34,8 @@ type User struct {
 // Create new user from request payload
 func NewUser(request model.RegisterRequest) User {
 	return User{
-		ID:       uuid.New(),
-		Name:     request.Name,
-		Email:    request.Email,
+		Nama:     request.Nama,
+		Username: request.Username,
 		Password: request.Password,
 	}
 }
@@ -61,8 +68,10 @@ func (u User) VerifyPassword(plain string) error {
 func (u User) GenerateToken(secret string, expiryHour int) (string, error) {
 	payload := utils.NewJwtClaims(
 		map[string]interface{}{
-			"id":   u.ID.String(),
-			"name": u.Name,
+			"id":       u.ID,
+			"nama":     u.Nama,
+			"username": u.Username,
+			"role":     u.Role,
 		},
 		"user",
 	)

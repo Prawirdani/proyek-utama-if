@@ -88,8 +88,6 @@ func parseValidationError(err validator.ValidationErrors) *apiError {
 		switch errField.Tag() {
 		case "required":
 			errors[field] = "Field is required"
-		case "email":
-			errors[field] = "Invalid email format"
 		case "min":
 			if field == "password" {
 				errors[field] = "Must be at least 6 characters long"

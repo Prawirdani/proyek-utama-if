@@ -3,8 +3,8 @@ package model
 import "github.com/prawirdani/golang-restapi/pkg/utils"
 
 type RegisterRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Email    string `json:"email" validate:"required"`
+	Nama     string `json:"nama" validate:"required"`
+	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 
@@ -14,7 +14,7 @@ func (r RegisterRequest) ValidateRequest() error {
 }
 
 type LoginRequest struct {
-	Email    string `json:"email" validate:"required"`
+	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required"`
 }
 

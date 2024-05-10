@@ -53,7 +53,7 @@ func (u authUseCase) Login(ctx context.Context, request model.LoginRequest) (str
 
 	var token string
 
-	user, _ := u.userRepo.SelectWhere(ctxWT, "email", request.Email)
+	user, _ := u.userRepo.SelectWhere(ctxWT, "username", request.Username)
 	if err := user.VerifyPassword(request.Password); err != nil {
 		return token, err
 	}

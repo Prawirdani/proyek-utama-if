@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	ErrorEmailExists  = httputil.ErrConflict("Email already exists")
-	ErrorUserNotFound = httputil.ErrNotFound("User not found")
+	ErrorUsernameExists = httputil.ErrConflict("Username already exists")
+	ErrorUserNotFound   = httputil.ErrNotFound("User not found")
 )
 
 type UserRepository interface {
@@ -34,13 +34,13 @@ func NewUserRepository(pgpool *pgxpool.Pool, tableName string) userRepository {
 }
 
 func (r userRepository) InsertUser(ctx context.Context, u entity.User) error {
-	query := fmt.Sprintf("INSERT INTO %s(id, name, email, password) VALUES($1, $2, $3, $4)", r.tableName)
-	_, err := r.db.Exec(ctx, query, u.ID, u.Name, u.Email, u.Password)
+	query := fmt.Sprintf("INSERT INTO %s(nama, username, password) VALUES($1, $2, $3)", r.tableName)
+	_, err := r.db.Exec(ctx, query, u.Nama, u.Username, u.Password)
 
 	if err != nil {
 		// Unique constraint duplicate err by PG error code.
 		if strings.Contains(err.Error(), "23505") {
-			return ErrorEmailExists
+			return ErrorUsernameExists
 		}
 		return err
 	}
@@ -49,13 +49,14 @@ func (r userRepository) InsertUser(ctx context.Context, u entity.User) error {
 
 func (r userRepository) SelectWhere(ctx context.Context, field string, searchVal any) (entity.User, error) {
 	var user entity.User
-	query := fmt.Sprintf("SELECT id, name, email, password, created_at, updated_at FROM %s WHERE %s=$1", r.tableName, field)
+	query := fmt.Sprintf("SELECT id, nama, username, password, role, created_at, updated_at FROM %s WHERE %s=$1", r.tableName, field)
 
 	err := r.db.QueryRow(ctx, query, searchVal).Scan(
 		&user.ID,
-		&user.Name,
-		&user.Email,
+		&user.Nama,
+		&user.Username,
 		&user.Password,
+		&user.Role,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)

@@ -11,14 +11,14 @@ import (
 func TestNewUser(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		user := NewUser(model.RegisterRequest{
-			Name:     "doe",
-			Email:    "doe@mail.com",
+			Nama:     "doe",
+			Username: "doe@mail.com",
 			Password: "doe321",
 		})
 
 		require.NotNil(t, user)
-		require.Equal(t, "doe", user.Name)
-		require.Equal(t, "doe@mail.com", user.Email)
+		require.Equal(t, "doe", user.Nama)
+		require.Equal(t, "doe@mail.com", user.Username)
 		require.Equal(t, "doe321", user.Password)
 		require.NotEqual(t, uuid.Nil, user.ID)
 	})
@@ -27,8 +27,8 @@ func TestNewUser(t *testing.T) {
 
 func TestValidate(t *testing.T) {
 	user := NewUser(model.RegisterRequest{
-		Name:     "doe",
-		Email:    "doe@mail.com",
+		Nama:     "doe",
+		Username: "doe@mail.com",
 		Password: "doe321",
 	})
 	t.Run("success", func(t *testing.T) {
@@ -39,25 +39,19 @@ func TestValidate(t *testing.T) {
 
 	t.Run("fail-missing-name", func(t *testing.T) {
 		newUser := user
-		newUser.Name = ""
+		newUser.Nama = ""
 		err := newUser.Validate()
 		require.NotNil(t, err)
 	})
-	t.Run("fail-missing-email", func(t *testing.T) {
+	t.Run("fail-missing-username", func(t *testing.T) {
 		newUser := user
-		newUser.Email = ""
+		newUser.Username = ""
 		err := newUser.Validate()
 		require.NotNil(t, err)
 	})
 	t.Run("fail-missing-password", func(t *testing.T) {
 		newUser := user
 		newUser.Password = ""
-		err := newUser.Validate()
-		require.NotNil(t, err)
-	})
-	t.Run("fail-invalid-email", func(t *testing.T) {
-		newUser := user
-		newUser.Email = "doe.mail.com"
 		err := newUser.Validate()
 		require.NotNil(t, err)
 	})
@@ -72,8 +66,8 @@ func TestValidate(t *testing.T) {
 func TestEncryptPassword(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		newUser := NewUser(model.RegisterRequest{
-			Name:     "john doe",
-			Email:    "doe@mail.com",
+			Nama:     "john doe",
+			Username: "doe@mail.com",
 			Password: "doe321",
 		})
 
@@ -87,8 +81,8 @@ func TestEncryptPassword(t *testing.T) {
 
 func TestVerifyPassword(t *testing.T) {
 	user := NewUser(model.RegisterRequest{
-		Name:     "john doe",
-		Email:    "doe@mail.com",
+		Nama:     "john doe",
+		Username: "doe@mail.com",
 		Password: "doe321",
 	})
 
@@ -112,8 +106,8 @@ func TestVerifyPassword(t *testing.T) {
 
 func TestGenerateToken(t *testing.T) {
 	user := NewUser(model.RegisterRequest{
-		Name:     "doe",
-		Email:    "doe@mail.com",
+		Nama:     "doe",
+		Username: "doe@mail.com",
 		Password: "doe321",
 	})
 	require.NotNil(t, user)

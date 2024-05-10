@@ -8,8 +8,8 @@ import (
 
 func TestValidateRegisterRequest(t *testing.T) {
 	request := RegisterRequest{
-		Name:     "doe",
-		Email:    "doe@mail.com",
+		Nama:     "John Doe",
+		Username: "doe",
 		Password: "doe123",
 	}
 
@@ -20,14 +20,14 @@ func TestValidateRegisterRequest(t *testing.T) {
 
 	t.Run("missing-name", func(t *testing.T) {
 		req := request
-		req.Name = ""
+		req.Nama = ""
 		err := req.ValidateRequest()
 		require.NotNil(t, err)
 	})
 
-	t.Run("missing-email", func(t *testing.T) {
+	t.Run("missing-username", func(t *testing.T) {
 		req := request
-		req.Email = ""
+		req.Username = ""
 		err := req.ValidateRequest()
 		require.NotNil(t, err)
 	})
@@ -42,7 +42,7 @@ func TestValidateRegisterRequest(t *testing.T) {
 
 func TestValidateLoginRequest(t *testing.T) {
 	request := LoginRequest{
-		Email:    "doe@mail.com",
+		Username: "doe@mail.com",
 		Password: "doe123",
 	}
 
@@ -51,9 +51,9 @@ func TestValidateLoginRequest(t *testing.T) {
 		require.Nil(t, err)
 	})
 
-	t.Run("missing-email", func(t *testing.T) {
+	t.Run("missing-username", func(t *testing.T) {
 		req := request
-		req.Email = ""
+		req.Username = ""
 		err := req.ValidateRequest()
 		require.NotNil(t, err)
 	})
