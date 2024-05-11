@@ -39,6 +39,9 @@ func (r menuRepository) InsertKategori(ctx context.Context, m entity.KategoriMen
 	query := "INSERT INTO kategori_menu (nama) VALUES ($1)"
 	_, err := r.db.Exec(ctx, query, m.Nama)
 	if err != nil {
+		if strings.Contains(err.Error(), "23505") {
+			return entity.ErrorDuplicateKategori
+		}
 		return err
 	}
 	return nil
@@ -48,6 +51,9 @@ func (r menuRepository) UpdateKategori(ctx context.Context, m entity.KategoriMen
 	query := "UPDATE kategori_menu SET nama=$1, deleted_at=$2 WHERE id=$3"
 	_, err := r.db.Exec(ctx, query, m.Nama, m.DeletedAt, m.ID)
 	if err != nil {
+		if strings.Contains(err.Error(), "23505") {
+			return entity.ErrorDuplicateKategori
+		}
 		return err
 	}
 	return nil
