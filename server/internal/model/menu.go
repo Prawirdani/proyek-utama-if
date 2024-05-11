@@ -14,6 +14,7 @@ type CreateMenuRequest struct {
 	Deskripsi  *string `json:"deskripsi"`
 	Harga      int     `json:"harga" validate:"required,min=1"`
 	KategoriId int     `json:"kategoriId" validate:"required"`
+	ImageName  *string
 }
 
 type UpdateMenuRequest struct {
@@ -22,4 +23,5 @@ type UpdateMenuRequest struct {
 	Deskripsi  *string `json:"deskripsi"`
 	Harga      int     `json:"harga" validate:"required,min=1"`
 	KategoriId int     `json:"kategoriId" validate:"required"`
+	ImageName  *string
 }
