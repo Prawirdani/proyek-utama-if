@@ -43,7 +43,7 @@ func (h MejaHandler) HandleListMeja(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h MejaHandler) HandleFindMeja(w http.ResponseWriter, r *http.Request) error {
-	id, err := httputil.ParamInt(r, "mejaID")
+	id, err := httputil.ParamInt(r, "tableID")
 	if err != nil {
 		return httputil.ErrBadRequest("ID meja tidak valid!")
 	}
@@ -57,7 +57,7 @@ func (h MejaHandler) HandleFindMeja(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h MejaHandler) HandleUpdateMeja(w http.ResponseWriter, r *http.Request) error {
-	id, err := httputil.ParamInt(r, "mejaID")
+	id, err := httputil.ParamInt(r, "tableID")
 	if err != nil {
 		return httputil.ErrBadRequest("ID meja tidak valid!")
 	}
@@ -76,7 +76,7 @@ func (h MejaHandler) HandleUpdateMeja(w http.ResponseWriter, r *http.Request) er
 }
 
 func (h MejaHandler) HandleDeleteMeja(w http.ResponseWriter, r *http.Request) error {
-	id, err := httputil.ParamInt(r, "mejaID")
+	id, err := httputil.ParamInt(r, "tableID")
 	if err != nil {
 		return httputil.ErrBadRequest("ID meja tidak valid!")
 	}

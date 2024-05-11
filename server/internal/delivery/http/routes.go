@@ -34,11 +34,11 @@ func MapMenuRoutes(r chi.Router, h MenuHandler, mw middleware.MiddlewareManager)
 
 func MapMejaRoutes(r chi.Router, h MejaHandler, mw middleware.MiddlewareManager) {
 	r.With(mw.Authenticate).Group(func(subR chi.Router) {
-		subR.Post("/meja", handlerFn(h.HandleCreateMeja))
-		subR.Get("/meja", handlerFn(h.HandleListMeja))
-		subR.Get("/meja/{mejaID}", handlerFn(h.HandleFindMeja))
-		subR.Put("/meja/{mejaID}", handlerFn(h.HandleUpdateMeja))
-		subR.Delete("/meja/{mejaID}", handlerFn(h.HandleDeleteMeja))
+		subR.Post("/tables", handlerFn(h.HandleCreateMeja))
+		subR.Get("/tables", handlerFn(h.HandleListMeja))
+		subR.Get("/tables/{tableID}", handlerFn(h.HandleFindMeja))
+		subR.Put("/tables/{tableID}", handlerFn(h.HandleUpdateMeja))
+		subR.Delete("/tables/{tableID}", handlerFn(h.HandleDeleteMeja))
 	})
 }
 
