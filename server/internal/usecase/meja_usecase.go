@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/prawirdani/golang-restapi/config"
-	"github.com/prawirdani/golang-restapi/internal/entity"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/internal/repository"
+	"github.com/prawirdani/golang-restapi/internal/valueobject"
 )
 
 type MejaUseCase interface {
 	CreateMeja(ctx context.Context, request model.CreateMejaRequest) error
-	ListMeja(ctx context.Context) ([]entity.Meja, error)
-	FindMeja(ctx context.Context, id int) (*entity.Meja, error)
+	ListMeja(ctx context.Context) ([]valueobject.Meja, error)
+	FindMeja(ctx context.Context, id int) (*valueobject.Meja, error)
 	UpdateMeja(ctx context.Context, request model.UpdateMejaRequest) error
 	RemoveMeja(ctx context.Context, id int) error
 }
@@ -34,19 +34,19 @@ func (us mejaUseCase) CreateMeja(ctx context.Context, request model.CreateMejaRe
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
-	newMeja := entity.NewMeja(request)
+	newMeja := valueobject.NewMeja(request)
 
 	return us.mejaRepo.Insert(ctxWT, newMeja)
 }
 
-func (us mejaUseCase) ListMeja(ctx context.Context) ([]entity.Meja, error) {
+func (us mejaUseCase) ListMeja(ctx context.Context) ([]valueobject.Meja, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
 	return us.mejaRepo.Select(ctxWT)
 }
 
-func (us mejaUseCase) FindMeja(ctx context.Context, id int) (*entity.Meja, error) {
+func (us mejaUseCase) FindMeja(ctx context.Context, id int) (*valueobject.Meja, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
