@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS meja;
+DROP Type IF EXISTS StatusMeja;
