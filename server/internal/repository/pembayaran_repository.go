@@ -8,14 +8,14 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prawirdani/golang-restapi/config"
-	"github.com/prawirdani/golang-restapi/internal/valueobject"
+	"github.com/prawirdani/golang-restapi/internal/entity"
 )
 
 type PembayaranRepository interface {
-	InsertMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error
-	SelectMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error)
-	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*valueobject.MetodePembayaran, error)
-	UpdateMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error
+	InsertMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error
+	SelectMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error)
+	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*entity.MetodePembayaran, error)
+	UpdateMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error
 }
 
 type pembayaranRepository struct {
@@ -30,14 +30,14 @@ func NewPembayaranRepository(db *pgxpool.Pool, cfg *config.Config) PembayaranRep
 	}
 }
 
-func (r pembayaranRepository) InsertMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
+func (r pembayaranRepository) InsertMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error {
 	query := "INSERT INTO metode_pembayaran (tipe_pembayaran, metode, deskripsi) VALUES ($1, $2, $3)"
 
 	_, err := r.db.Exec(ctx, query, mp.TipePembayaran, mp.Metode, mp.Deskripsi)
 	if err != nil {
 		// Duplicate unique error
 		if strings.Contains(err.Error(), "23505") {
-			return valueobject.ErrorMetodePembayaranDuplicate
+			return entity.ErrorMetodePembayaranDuplicate
 		}
 		return err
 	}
@@ -45,7 +45,7 @@ func (r pembayaranRepository) InsertMetodePembayaran(ctx context.Context, mp val
 	return nil
 }
 
-func (r pembayaranRepository) SelectMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error) {
+func (r pembayaranRepository) SelectMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error) {
 	query := "SELECT id, tipe_pembayaran, metode, deskripsi, deleted_at FROM metode_pembayaran WHERE deleted_at IS NULL"
 
 	rows, err := r.db.Query(ctx, query)
@@ -54,9 +54,9 @@ func (r pembayaranRepository) SelectMetodePembayaran(ctx context.Context) ([]val
 	}
 	defer rows.Close()
 
-	var metodePembayaran []valueobject.MetodePembayaran
+	var metodePembayaran []entity.MetodePembayaran
 	for rows.Next() {
-		var mp valueobject.MetodePembayaran
+		var mp entity.MetodePembayaran
 		err := mp.ScanRow(rows)
 		if err != nil {
 			return nil, err
@@ -67,16 +67,16 @@ func (r pembayaranRepository) SelectMetodePembayaran(ctx context.Context) ([]val
 	return metodePembayaran, nil
 }
 
-func (r pembayaranRepository) SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*valueobject.MetodePembayaran, error) {
+func (r pembayaranRepository) SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*entity.MetodePembayaran, error) {
 	query := fmt.Sprintf("SELECT id, tipe_pembayaran, metode, deskripsi, deleted_at FROM metode_pembayaran WHERE %s=$1 AND deleted_at IS NULL", field)
 
 	row := r.db.QueryRow(ctx, query, searchVal)
 
-	var mp valueobject.MetodePembayaran
+	var mp entity.MetodePembayaran
 	err := mp.ScanRow(row)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, valueobject.ErrorMetodePembayaranNotFound
+			return nil, entity.ErrorMetodePembayaranNotFound
 		}
 		return nil, err
 	}
@@ -84,13 +84,13 @@ func (r pembayaranRepository) SelectMetodePembayaranWhere(ctx context.Context, f
 	return &mp, nil
 }
 
-func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
+func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error {
 	query := "UPDATE metode_pembayaran SET tipe_pembayaran=$1, metode=$2, deskripsi=$3, deleted_at=$4 WHERE id=$5"
 	_, err := r.db.Exec(ctx, query, mp.TipePembayaran, mp.Metode, mp.Deskripsi, mp.DeletedAt, mp.ID)
 	if err != nil {
 		// Duplicate unique error
 		if strings.Contains(err.Error(), "23505") {
-			return valueobject.ErrorMetodePembayaranDuplicate
+			return entity.ErrorMetodePembayaranDuplicate
 		}
 		return err
 	}

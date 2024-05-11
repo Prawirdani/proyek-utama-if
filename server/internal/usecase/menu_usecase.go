@@ -5,21 +5,21 @@ import (
 	"time"
 
 	"github.com/prawirdani/golang-restapi/config"
+	"github.com/prawirdani/golang-restapi/internal/entity"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/internal/repository"
-	"github.com/prawirdani/golang-restapi/internal/valueobject"
 )
 
 type MenuUsecase interface {
 	// Kategori Contract
 	CreateKategori(ctx context.Context, request model.CreateKategoriMenuRequest) error
-	ListKategori(ctx context.Context) ([]valueobject.KategoriMenu, error)
+	ListKategori(ctx context.Context) ([]entity.KategoriMenu, error)
 	UpdateKategori(ctx context.Context, request model.UpdateKategoriMenuRequest) error
 	RemoveKategori(ctx context.Context, id int) error
 	// Menu Contract
 	CreateMenu(ctx context.Context, request model.CreateMenuRequest) error
-	ListMenu(ctx context.Context) ([]valueobject.Menu, error)
-	FindMenu(ctx context.Context, id int) (*valueobject.Menu, error)
+	ListMenu(ctx context.Context) ([]entity.Menu, error)
+	FindMenu(ctx context.Context, id int) (*entity.Menu, error)
 	UpdateMenu(ctx context.Context, request model.UpdateMenuRequest) error
 	RemoveMenu(ctx context.Context, id int) error
 }
@@ -40,12 +40,12 @@ func (us menuUsecase) CreateKategori(ctx context.Context, request model.CreateKa
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
-	newKategori := valueobject.NewKategoriMenu(request)
+	newKategori := entity.NewKategoriMenu(request)
 
 	return us.menuRepo.InsertKategori(ctxWT, newKategori)
 }
 
-func (us menuUsecase) ListKategori(ctx context.Context) ([]valueobject.KategoriMenu, error) {
+func (us menuUsecase) ListKategori(ctx context.Context) ([]entity.KategoriMenu, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
@@ -87,18 +87,18 @@ func (us menuUsecase) CreateMenu(ctx context.Context, request model.CreateMenuRe
 		return err
 	}
 
-	newMenu := valueobject.NewMenu(request)
+	newMenu := entity.NewMenu(request)
 	return us.menuRepo.Insert(ctxWT, newMenu)
 }
 
-func (us menuUsecase) ListMenu(ctx context.Context) ([]valueobject.Menu, error) {
+func (us menuUsecase) ListMenu(ctx context.Context) ([]entity.Menu, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
 	return us.menuRepo.Select(ctxWT)
 }
 
-func (us menuUsecase) FindMenu(ctx context.Context, id int) (*valueobject.Menu, error) {
+func (us menuUsecase) FindMenu(ctx context.Context, id int) (*entity.Menu, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 

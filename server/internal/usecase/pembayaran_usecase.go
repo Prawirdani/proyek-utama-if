@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/prawirdani/golang-restapi/config"
+	"github.com/prawirdani/golang-restapi/internal/entity"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/internal/repository"
-	"github.com/prawirdani/golang-restapi/internal/valueobject"
 )
 
 type PembayaranUseCase interface {
 	CreateMetodePembayaran(ctx context.Context, request model.CreateMetodePembayaranRequest) error
-	ListMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error)
-	FindMetodePembayaran(ctx context.Context, id int) (*valueobject.MetodePembayaran, error)
+	ListMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error)
+	FindMetodePembayaran(ctx context.Context, id int) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, request model.UpdateMetodePembayaranRequest) error
 	RemoveMetodePembayaran(ctx context.Context, id int) error
 }
@@ -34,12 +34,12 @@ func (u pembayaranUsecase) CreateMetodePembayaran(ctx context.Context, request m
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
-	mp, err := valueobject.NewMetodePembayaran(request)
+	mp, err := entity.NewMetodePembayaran(request)
 	if err != nil {
 		return err
 	}
 
-	err = u.pembayaranRepo.InsertMetodePembayaran(ctxWT, mp)
+	err = u.pembayaranRepo.InsertMetodePembayaran(ctxWT, *mp)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (u pembayaranUsecase) CreateMetodePembayaran(ctx context.Context, request m
 	return nil
 }
 
-func (u pembayaranUsecase) ListMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error) {
+func (u pembayaranUsecase) ListMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
@@ -59,7 +59,7 @@ func (u pembayaranUsecase) ListMetodePembayaran(ctx context.Context) ([]valueobj
 	return mps, nil
 }
 
-func (u pembayaranUsecase) FindMetodePembayaran(ctx context.Context, id int) (*valueobject.MetodePembayaran, error) {
+func (u pembayaranUsecase) FindMetodePembayaran(ctx context.Context, id int) (*entity.MetodePembayaran, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
