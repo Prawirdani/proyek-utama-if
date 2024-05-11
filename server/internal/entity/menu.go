@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	ErrorKategoriExists   = httputil.ErrConflict("Kategori already exists.")
-	ErrorKategoriNotFound = httputil.ErrNotFound("Kategori not found.")
-	ErrorMenuNotFound     = httputil.ErrNotFound("Menu not found.")
+	ErrorDuplicateKategori = httputil.ErrConflict("Kategori dengan nama tersebut sudah ada!")
+	ErrorKategoriNotFound  = httputil.ErrNotFound("Kategori tidak ditemukan.")
+	ErrorMenuNotFound      = httputil.ErrNotFound("Menu tidak ditemukan.")
 )
 
 func capitalizeFirstLetter(str string) string {
