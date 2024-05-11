@@ -1,7 +1,7 @@
 DROP TYPE IF EXISTS TipePesanan;
 DROP TYPE IF EXISTS StatusPesanan;
 CREATE TYPE TipePesanan AS ENUM ('Dine In', 'Take Away');
-CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Dihidangkan');
+CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Disajikan', 'Selesai', 'Batal');
 CREATE TABLE pesanan (
 	id SERIAL PRIMARY KEY,
 	nama_pelanggan VARCHAR(100) NOT NULL,
