@@ -40,13 +40,8 @@ func (us menuUsecase) CreateKategori(ctx context.Context, request model.CreateKa
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
-	kategori, _ := us.menuRepo.SelectKategoriWhere(ctxWT, "nama", request.Nama)
-
-	if kategori != nil && kategori.NameEqual(request.Nama) {
-		return entity.ErrorKategoriExists
-	}
-
 	newKategori := entity.NewKategoriMenu(request)
+
 	return us.menuRepo.InsertKategori(ctxWT, newKategori)
 }
 
@@ -73,8 +68,8 @@ func (us menuUsecase) UpdateKategori(ctx context.Context, request model.UpdateKa
 func (us menuUsecase) RemoveKategori(ctx context.Context, id int) error {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(us.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
-	kategori, err := us.menuRepo.SelectKategoriWhere(ctxWT, "id", id)
 
+	kategori, err := us.menuRepo.SelectKategoriWhere(ctxWT, "id", id)
 	if err != nil {
 		return err
 	}

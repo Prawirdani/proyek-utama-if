@@ -1,10 +1,9 @@
 package http
 
 import (
+	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/internal/usecase"
@@ -43,20 +42,28 @@ func (h MenuHandler) HandleCreateKategori(w http.ResponseWriter, r *http.Request
 }
 
 func (h MenuHandler) HandleCreateMenu(w http.ResponseWriter, r *http.Request) error {
-	var reqBody model.CreateMenuRequest
+	dataBody := r.FormValue("data")
+	var menuData model.CreateMenuRequest
 
-	if err := httputil.BindJSON(r, &reqBody); err != nil {
+	err := json.Unmarshal([]byte(dataBody), &menuData)
+	if err != nil {
+		return httputil.ErrBadRequest(err.Error())
+	}
+
+	if err := utils.Validate.Struct(menuData); err != nil {
 		return err
 	}
 
-	if err := utils.Validate.Struct(reqBody); err != nil {
+	imageName, err := httputil.UploadHandler(r, "image")
+	if err != nil {
 		return err
 	}
 
-	if err := h.menuUC.CreateMenu(r.Context(), reqBody); err != nil {
+	menuData.ImageName = imageName
+	if err := h.menuUC.CreateMenu(r.Context(), menuData); err != nil {
+		httputil.DeleteUpload(*imageName)
 		return err
 	}
-
 	return response(w, status(201), message("Menu created."))
 }
 
@@ -79,8 +86,7 @@ func (h MenuHandler) HandleListMenu(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "menuID")
-	id, err := strconv.Atoi(idStr)
+	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
 		return httputil.ErrBadRequest("Invalid menu ID.")
 	}
@@ -94,8 +100,7 @@ func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (h MenuHandler) HandleDeleteKategori(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "categoryID")
-	id, err := strconv.Atoi(idStr)
+	id, err := httputil.ParamInt(r, "categoryID")
 	if err != nil {
 		return httputil.ErrBadRequest("Invalid category ID.")
 	}
@@ -108,8 +113,7 @@ func (h MenuHandler) HandleDeleteKategori(w http.ResponseWriter, r *http.Request
 }
 
 func (h MenuHandler) HandleDeleteMenu(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "menuID")
-	id, err := strconv.Atoi(idStr)
+	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
 		return httputil.ErrBadRequest("Invalid menu ID.")
 	}
@@ -122,9 +126,7 @@ func (h MenuHandler) HandleDeleteMenu(w http.ResponseWriter, r *http.Request) er
 }
 
 func (h MenuHandler) HandleUpdateKategori(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "categoryID")
-	id, err := strconv.Atoi(idStr)
-
+	id, err := httputil.ParamInt(r, "categoryID")
 	if err != nil {
 		return httputil.ErrBadRequest("Invalid category ID.")
 	}
@@ -147,24 +149,33 @@ func (h MenuHandler) HandleUpdateKategori(w http.ResponseWriter, r *http.Request
 }
 
 func (h MenuHandler) HandleUpdateMenu(w http.ResponseWriter, r *http.Request) error {
-	idStr := chi.URLParam(r, "menuID")
-	id, err := strconv.Atoi(idStr)
-
+	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
 		return httputil.ErrBadRequest("Invalid menu ID.")
 	}
 
-	var reqBody model.UpdateMenuRequest
-	if err := httputil.BindJSON(r, &reqBody); err != nil {
-		return err
-	}
-	reqBody.ID = id
+	dataBody := r.FormValue("data")
+	var menuData model.UpdateMenuRequest
 
-	if err := utils.Validate.Struct(reqBody); err != nil {
-		return err
+	err = json.Unmarshal([]byte(dataBody), &menuData)
+	if err != nil {
+		return httputil.ErrBadRequest(err.Error())
 	}
 
-	if err := h.menuUC.UpdateMenu(r.Context(), reqBody); err != nil {
+	menuData.ID = id
+	if err := utils.Validate.Struct(menuData); err != nil {
+		return err
+	}
+
+	imageName, err := httputil.UploadHandler(r, "image")
+	if err != nil {
+		return err
+	}
+
+	menuData.ImageName = imageName
+
+	if err := h.menuUC.UpdateMenu(r.Context(), menuData); err != nil {
+		httputil.DeleteUpload(*imageName)
 		return err
 	}
 

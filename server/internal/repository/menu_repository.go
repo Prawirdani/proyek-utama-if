@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/entity"
 )
 
@@ -23,12 +24,14 @@ type MenuRepository interface {
 }
 
 type menuRepository struct {
-	db *pgxpool.Pool
+	db  *pgxpool.Pool
+	cfg *config.Config
 }
 
-func NewMenuRepository(pgpool *pgxpool.Pool) menuRepository {
+func NewMenuRepository(pgpool *pgxpool.Pool, cfg *config.Config) menuRepository {
 	return menuRepository{
-		db: pgpool,
+		db:  pgpool,
+		cfg: cfg,
 	}
 }
 
@@ -87,8 +90,8 @@ func (r menuRepository) SelectKategoriWhere(ctx context.Context, field string, s
 }
 
 func (r menuRepository) Insert(ctx context.Context, m entity.Menu) error {
-	query := "INSERT INTO menus (nama, deskripsi, harga, kategori_id) VALUES ($1, $2, $3, $4)"
-	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID)
+	query := "INSERT INTO menus (nama, deskripsi, harga, kategori_id, url_foto) VALUES ($1, $2, $3, $4, $5)"
+	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID, m.Url)
 	if err != nil {
 		// Violate Foreign Key err by PG error code.
 		if strings.Contains(err.Error(), "23503") {
@@ -101,8 +104,8 @@ func (r menuRepository) Insert(ctx context.Context, m entity.Menu) error {
 
 func (r menuRepository) Update(ctx context.Context, m entity.Menu) error {
 	updatedAt := time.Now()
-	query := "UPDATE menus SET nama=$1, deskripsi=$2, harga=$3, kategori_id=$4, deleted_at=$5, updated_at=$6 WHERE id=$7"
-	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID, m.DeletedAt, updatedAt, m.ID)
+	query := "UPDATE menus SET nama=$1, deskripsi=$2, harga=$3, kategori_id=$4, url_foto=$5, deleted_at=$6, updated_at=$7 WHERE id=$8"
+	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID, m.Url, m.DeletedAt, updatedAt, m.ID)
 	if err != nil {
 		// Violate Foreign Key err by PG error code.
 		if strings.Contains(err.Error(), "23503") {
@@ -129,6 +132,7 @@ func (r menuRepository) Select(ctx context.Context) ([]entity.Menu, error) {
 		if err := m.ScanRow(rows); err != nil {
 			return nil, err
 		}
+		m.FormatURL(r.cfg)
 		menus = append(menus, m)
 	}
 	return menus, nil
@@ -145,6 +149,7 @@ func (r menuRepository) SelectWhere(ctx context.Context, field string, searchVal
 		}
 		return nil, err
 	}
+	menu.FormatURL(r.cfg)
 	return &menu, nil
 }
 
