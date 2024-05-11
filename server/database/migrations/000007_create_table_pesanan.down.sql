@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS pesanan;
+DROP TYPE IF EXISTS StatusPesanan;
