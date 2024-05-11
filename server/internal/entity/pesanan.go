@@ -15,6 +15,15 @@ type Pesanan struct {
 	TipePesanan   valueobject.TipePesanan   `json:"tipe"`
 	StatusPesanan valueobject.StatusPesanan `json:"status"`
 	Detail        []DetailPesanan           `json:"detail"`
+	Pembayaran    *Pembayaran               `json:"pembayaran"`
 	Catatan       sql.NullString            `json:"catatan,omitempty"`
 	WaktuPesanan  time.Time                 `json:"waktuPesanan"`
+}
+
+func (p *Pesanan) CalculateTotal() int {
+	total := 0
+	for _, detail := range p.Detail {
+		total += detail.Subtotal
+	}
+	return total
 }
