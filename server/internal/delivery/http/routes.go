@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/prawirdani/golang-restapi/internal/middleware"
 	"github.com/prawirdani/golang-restapi/pkg/httputil"
@@ -28,4 +30,10 @@ func MapMenuRoutes(r chi.Router, h MenuHandler, mw middleware.MiddlewareManager)
 		subR.Delete("/menus/{menuID}", handlerFn(h.HandleDeleteMenu))
 		subR.Post("/menus", handlerFn(h.HandleCreateMenu))
 	})
+}
+
+// images file server, serving images from uploads directory
+func ImagesFS(r chi.Router) {
+	uploadsDir := "./uploads"
+	r.Handle("/images/*", http.StripPrefix("/api/images/", http.FileServer(http.Dir(uploadsDir))))
 }
