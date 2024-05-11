@@ -5,6 +5,6 @@ type CreateMejaRequest struct {
 }
 
 type UpdateMejaRequest struct {
-	ID    int    `json:"id" validate:"required"`
+	ID    int
 	Nomor string `json:"nomor" validate:"required"`
 }

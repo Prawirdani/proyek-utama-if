@@ -4,6 +4,12 @@ import (
 	"time"
 
 	"github.com/prawirdani/golang-restapi/internal/model"
+	"github.com/prawirdani/golang-restapi/pkg/httputil"
+)
+
+var (
+	ErrorDuplicateNomorMeja = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
+	ErrorMejaNotFound       = httputil.ErrConflict("Meja tidak ditemukan!")
 )
 
 type StatusMeja string
@@ -27,6 +33,11 @@ func (m *Meja) ScanRow(row Row) error {
 
 func (m *Meja) Assign(request model.UpdateMejaRequest) {
 	m.Nomor = request.Nomor
+}
+
+func (m *Meja) SetDeletedAt() {
+	now := time.Now()
+	m.DeletedAt = &now
 }
 
 func NewMeja(request model.CreateMejaRequest) Meja {
