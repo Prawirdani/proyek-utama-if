@@ -115,7 +115,6 @@ func (us menuUsecase) UpdateMenu(ctx context.Context, request model.UpdateMenuRe
 	}
 
 	menu.Assign(request)
-
 	return us.menuRepo.Update(ctxWT, *menu)
 }
 
@@ -127,6 +126,11 @@ func (us menuUsecase) RemoveMenu(ctx context.Context, id int) error {
 	if err != nil {
 		return err
 	}
+
+	if err := menu.DeleteImage(); err != nil {
+		return err
+	}
+
 	menu.SetDeletedAt()
 
 	return us.menuRepo.Update(ctxWT, *menu)

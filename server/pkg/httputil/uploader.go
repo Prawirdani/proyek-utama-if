@@ -38,8 +38,10 @@ func UploadHandler(r *http.Request, formName string) (*string, error) {
 
 	return &fileName, nil
 }
-func DeleteUpload(fileName string) {
-	_ = os.Remove(filepath.Join("uploads", fileName))
+
+func DeleteUpload(fileName string) error {
+	err := os.Remove(filepath.Join("uploads", fileName))
+	return err
 }
 
 func generateFileName(originalFileName string) string {

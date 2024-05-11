@@ -95,6 +95,7 @@ func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) erro
 	if err != nil {
 		return err
 	}
+	menu.FormatURL(h.cfg)
 
 	return response(w, status(200), data(menu))
 }
@@ -171,7 +172,6 @@ func (h MenuHandler) HandleUpdateMenu(w http.ResponseWriter, r *http.Request) er
 	if err != nil {
 		return err
 	}
-
 	menuData.ImageName = imageName
 
 	if err := h.menuUC.UpdateMenu(r.Context(), menuData); err != nil {

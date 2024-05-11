@@ -85,6 +85,7 @@ func (m *Menu) SetDeletedAt() {
 	m.DeletedAt = &t
 }
 
+// Concate image filename with host
 func (m *Menu) FormatURL(cfg *config.Config) {
 	if m.Url != nil {
 		var host string
@@ -97,6 +98,15 @@ func (m *Menu) FormatURL(cfg *config.Config) {
 		url := fmt.Sprintf("%s/api/images/%s", host, *m.Url)
 		m.Url = &url
 	}
+}
+
+func (m *Menu) DeleteImage() error {
+	if m.Url != nil {
+		filename := *m.Url
+		m.Url = nil
+		return httputil.DeleteUpload(filename)
+	}
+	return nil
 }
 
 func NewMenu(request model.CreateMenuRequest) Menu {
