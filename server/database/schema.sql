@@ -46,46 +46,46 @@ CREATE TABLE metode_pembayaran (
 	deleted_at TIMESTAMPTZ
 );
 
-CREATE TYPE TipeTransaksi AS ENUM ('Dine In', 'Take Away');
-CREATE TABLE transaksi (
+CREATE TYPE TipePesanan AS ENUM ('Dine In', 'Take Away');
+CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Dihidangkan');
+CREATE TABLE pesanan (
 	id SERIAL PRIMARY KEY,
 	nama_pelanggan VARCHAR(100) NOT NULL,
 	kasir_id INTEGER NOT NULL,
 	meja_id INTEGER,
 	total BIGINT NOT NULL,
-	tipe_transaksi TipeTransaksi NOT NULL,
+	tipe_pesanan TipePesanan NOT NULL,
+	status_pesanan StatusPesanan NOT NULL DEFAULT 'Diproses',
 	catatan TEXT,
-	waktu_transaksi TIMESTAMPTZ DEFAULT current_timestamp,
+	waktu_pesanan TIMESTAMPTZ DEFAULT current_timestamp,
 	CONSTRAINT fk_kasir_id FOREIGN KEY(kasir_id) REFERENCES users(id),
 	CONSTRAINT fk_meja_id FOREIGN KEY(meja_id) REFERENCES meja(id)
 );
 
-CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Dihidangkan');
-CREATE TABLE pesanan(
+CREATE TABLE detail_pesanan(
 	id SERIAL PRIMARY KEY,
-	transaksi_id INTEGER NOT NULL,
+	pesanan_id INTEGER NOT NULL,
 	menu_id INTEGER NOT NULL,
 	harga INTEGER NOT NULL,
 	kuantitas INTEGER NOT NULL,
 	subtotal BIGINT NOT NULL,	
-	status_pesanan StatusPesanan NOT NULL DEFAULT 'Diproses',
-	CONSTRAINT fk_transaksi_id FOREIGN KEY(transaksi_id) REFERENCES transaksi(id),
+	CONSTRAINT fk_pesanan_id FOREIGN KEY(pesanan_id) REFERENCES pesanan(id),
 	CONSTRAINT fk_menu_id FOREIGN KEY(menu_id) REFERENCES menus(id)
 );
 
 CREATE TABLE pembayaran (
 	id SERIAL PRIMARY KEY,
-	transaksi_id INTEGER NOT NULL,
+	pesanan_id INTEGER NOT NULL,
 	metode_pembayaran_id INTEGER NOT NULL,
 	jumlah BIGINT NOT NULL,
 	waktu_pembayaran TIMESTAMPTZ DEFAULT current_timestamp,
-	CONSTRAINT fk_transaksi_id FOREIGN KEY(transaksi_id) REFERENCES transaksi(id),
+	CONSTRAINT fk_pesanan_id FOREIGN KEY(pesanan_id) REFERENCES pesanan(id),
 	CONSTRAINT fk_metode_pembayaran_id FOREIGN KEY(metode_pembayaran_id) REFERENCES metode_pembayaran(id)
 );
 
 CREATE TABLE receipts (
 	id SERIAL PRIMARY KEY,
-	transaksi_id INTEGER NOT NULL UNIQUE,
+	pesanan_id INTEGER NOT NULL UNIQUE,
 	data JSONB NOT NULL,
-	CONSTRAINT fk_transaksi_id FOREIGN KEY(transaksi_id) REFERENCES transaksi(id)
+	CONSTRAINT fk_pesanan_id FOREIGN KEY(pesanan_id) REFERENCES pesanan(id)
 );
