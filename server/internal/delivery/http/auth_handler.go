@@ -77,3 +77,17 @@ func (h AuthHandler) CurrentUser(w http.ResponseWriter, r *http.Request) error {
 
 	return response(w, data(tokenClaims))
 }
+
+func (h AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) error {
+	tokenCookie := &http.Cookie{
+		Name:     h.cfg.Token.AccessCookieName,
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: h.cfg.IsProduction(),
+	}
+
+	http.SetCookie(w, tokenCookie)
+
+	return response(w, message("Logout successful."))
+}
