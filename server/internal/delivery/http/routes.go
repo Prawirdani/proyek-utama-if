@@ -42,6 +42,11 @@ func MapMejaRoutes(r chi.Router, h MejaHandler, mw middleware.MiddlewareManager)
 	})
 }
 
+func MapPaymentRoutes(r chi.Router, h PaymentHandler, mw middleware.MiddlewareManager) {
+	r.With(mw.Authenticate).Group(func(subR chi.Router) {
+	})
+}
+
 // images file server, serving images from uploads directory
 func ImagesFS(r chi.Router) {
 	uploadsDir := "./uploads"
