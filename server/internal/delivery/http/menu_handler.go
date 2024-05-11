@@ -38,7 +38,7 @@ func (h MenuHandler) HandleCreateKategori(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	return response(w, status(201), message("Kategori menu created."))
+	return response(w, status(http.StatusCreated), message("Kategori menu berhasil dibuat!."))
 }
 
 func (h MenuHandler) HandleCreateMenu(w http.ResponseWriter, r *http.Request) error {
@@ -64,7 +64,7 @@ func (h MenuHandler) HandleCreateMenu(w http.ResponseWriter, r *http.Request) er
 		httputil.DeleteUpload(*imageName)
 		return err
 	}
-	return response(w, status(201), message("Menu created."))
+	return response(w, status(http.StatusCreated), message("Menu berhasil dibuat!."))
 }
 
 func (h MenuHandler) HandleListKategori(w http.ResponseWriter, r *http.Request) error {
@@ -73,7 +73,7 @@ func (h MenuHandler) HandleListKategori(w http.ResponseWriter, r *http.Request) 
 		return err
 	}
 
-	return response(w, status(200), data(kategori))
+	return response(w, data(kategori))
 }
 
 func (h MenuHandler) HandleListMenu(w http.ResponseWriter, r *http.Request) error {
@@ -82,13 +82,13 @@ func (h MenuHandler) HandleListMenu(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	return response(w, status(200), data(menu))
+	return response(w, data(menu))
 }
 
 func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) error {
 	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
-		return httputil.ErrBadRequest("Invalid menu ID.")
+		return httputil.ErrBadRequest("ID Menu tidak valid!")
 	}
 
 	menu, err := h.menuUC.FindMenu(r.Context(), id)
@@ -97,39 +97,39 @@ func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) erro
 	}
 	menu.FormatURL(h.cfg)
 
-	return response(w, status(200), data(menu))
+	return response(w, data(menu))
 }
 
 func (h MenuHandler) HandleDeleteKategori(w http.ResponseWriter, r *http.Request) error {
 	id, err := httputil.ParamInt(r, "categoryID")
 	if err != nil {
-		return httputil.ErrBadRequest("Invalid category ID.")
+		return httputil.ErrBadRequest("ID Kategori tidak valid!")
 	}
 
 	if err := h.menuUC.RemoveKategori(r.Context(), id); err != nil {
 		return err
 	}
 
-	return response(w, status(200), message("Kategori menu removed."))
+	return response(w, message("Kategori menu berhasil dihapus!."))
 }
 
 func (h MenuHandler) HandleDeleteMenu(w http.ResponseWriter, r *http.Request) error {
 	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
-		return httputil.ErrBadRequest("Invalid menu ID.")
+		return httputil.ErrBadRequest("ID Menu tidak valid!")
 	}
 
 	if err := h.menuUC.RemoveMenu(r.Context(), id); err != nil {
 		return err
 	}
 
-	return response(w, status(200), message("Menu removed."))
+	return response(w, message("Menu berhasil dihapus!."))
 }
 
 func (h MenuHandler) HandleUpdateKategori(w http.ResponseWriter, r *http.Request) error {
 	id, err := httputil.ParamInt(r, "categoryID")
 	if err != nil {
-		return httputil.ErrBadRequest("Invalid category ID.")
+		return httputil.ErrBadRequest("ID Kategori tidak valid!")
 	}
 
 	var reqBody model.UpdateKategoriMenuRequest
@@ -146,13 +146,13 @@ func (h MenuHandler) HandleUpdateKategori(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	return response(w, status(200), message("Kategori menu updated."))
+	return response(w, message("Kategori menu berhasil di update!."))
 }
 
 func (h MenuHandler) HandleUpdateMenu(w http.ResponseWriter, r *http.Request) error {
 	id, err := httputil.ParamInt(r, "menuID")
 	if err != nil {
-		return httputil.ErrBadRequest("Invalid menu ID.")
+		return httputil.ErrBadRequest("ID Menu tidak valid!")
 	}
 
 	dataBody := r.FormValue("data")
@@ -191,5 +191,5 @@ func (h MenuHandler) HandleUpdateMenu(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	return response(w, status(200), message("Menu updated."))
+	return response(w, message("Menu berhasil di update!."))
 }
