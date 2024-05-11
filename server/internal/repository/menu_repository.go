@@ -9,18 +9,18 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prawirdani/golang-restapi/config"
-	"github.com/prawirdani/golang-restapi/internal/entity"
+	"github.com/prawirdani/golang-restapi/internal/valueobject"
 )
 
 type MenuRepository interface {
-	InsertKategori(ctx context.Context, m entity.KategoriMenu) error
-	UpdateKategori(ctx context.Context, m entity.KategoriMenu) error
-	SelectKategori(ctx context.Context) ([]entity.KategoriMenu, error)
-	SelectKategoriWhere(ctx context.Context, field string, searchVal any) (*entity.KategoriMenu, error)
-	Insert(ctx context.Context, m entity.Menu) error
-	Update(ctx context.Context, m entity.Menu) error
-	Select(ctx context.Context) ([]entity.Menu, error)
-	SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Menu, error)
+	InsertKategori(ctx context.Context, m valueobject.KategoriMenu) error
+	UpdateKategori(ctx context.Context, m valueobject.KategoriMenu) error
+	SelectKategori(ctx context.Context) ([]valueobject.KategoriMenu, error)
+	SelectKategoriWhere(ctx context.Context, field string, searchVal any) (*valueobject.KategoriMenu, error)
+	Insert(ctx context.Context, m valueobject.Menu) error
+	Update(ctx context.Context, m valueobject.Menu) error
+	Select(ctx context.Context) ([]valueobject.Menu, error)
+	SelectWhere(ctx context.Context, field string, searchVal any) (*valueobject.Menu, error)
 }
 
 type menuRepository struct {
@@ -35,31 +35,31 @@ func NewMenuRepository(pgpool *pgxpool.Pool, cfg *config.Config) menuRepository 
 	}
 }
 
-func (r menuRepository) InsertKategori(ctx context.Context, m entity.KategoriMenu) error {
+func (r menuRepository) InsertKategori(ctx context.Context, m valueobject.KategoriMenu) error {
 	query := "INSERT INTO kategori_menu (nama) VALUES ($1)"
 	_, err := r.db.Exec(ctx, query, m.Nama)
 	if err != nil {
 		if strings.Contains(err.Error(), "23505") {
-			return entity.ErrorDuplicateKategori
+			return valueobject.ErrorDuplicateKategori
 		}
 		return err
 	}
 	return nil
 }
 
-func (r menuRepository) UpdateKategori(ctx context.Context, m entity.KategoriMenu) error {
+func (r menuRepository) UpdateKategori(ctx context.Context, m valueobject.KategoriMenu) error {
 	query := "UPDATE kategori_menu SET nama=$1, deleted_at=$2 WHERE id=$3"
 	_, err := r.db.Exec(ctx, query, m.Nama, m.DeletedAt, m.ID)
 	if err != nil {
 		if strings.Contains(err.Error(), "23505") {
-			return entity.ErrorDuplicateKategori
+			return valueobject.ErrorDuplicateKategori
 		}
 		return err
 	}
 	return nil
 }
 
-func (r menuRepository) SelectKategori(ctx context.Context) ([]entity.KategoriMenu, error) {
+func (r menuRepository) SelectKategori(ctx context.Context) ([]valueobject.KategoriMenu, error) {
 	query := "SELECT * FROM kategori_menu WHERE deleted_at IS NULL"
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
@@ -67,9 +67,9 @@ func (r menuRepository) SelectKategori(ctx context.Context) ([]entity.KategoriMe
 	}
 	defer rows.Close()
 
-	var kategories []entity.KategoriMenu
+	var kategories []valueobject.KategoriMenu
 	for rows.Next() {
-		var k entity.KategoriMenu
+		var k valueobject.KategoriMenu
 		err := k.ScanRow(rows)
 		if err != nil {
 			return nil, err
@@ -79,50 +79,50 @@ func (r menuRepository) SelectKategori(ctx context.Context) ([]entity.KategoriMe
 	return kategories, nil
 }
 
-func (r menuRepository) SelectKategoriWhere(ctx context.Context, field string, searchVal any) (*entity.KategoriMenu, error) {
+func (r menuRepository) SelectKategoriWhere(ctx context.Context, field string, searchVal any) (*valueobject.KategoriMenu, error) {
 	query := fmt.Sprintf("SELECT * FROM kategori_menu WHERE %s=$1 AND deleted_at IS NULL", field)
 	row := r.db.QueryRow(ctx, query, searchVal)
 
-	var kategori entity.KategoriMenu
+	var kategori valueobject.KategoriMenu
 
 	err := kategori.ScanRow(row)
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, entity.ErrorKategoriNotFound
+			return nil, valueobject.ErrorKategoriNotFound
 		}
 		return nil, err
 	}
 	return &kategori, nil
 }
 
-func (r menuRepository) Insert(ctx context.Context, m entity.Menu) error {
+func (r menuRepository) Insert(ctx context.Context, m valueobject.Menu) error {
 	query := "INSERT INTO menus (nama, deskripsi, harga, kategori_id, url_foto) VALUES ($1, $2, $3, $4, $5)"
 	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID, m.Url)
 	if err != nil {
 		// Violate Foreign Key err by PG error code.
 		if strings.Contains(err.Error(), "23503") {
-			return entity.ErrorKategoriNotFound
+			return valueobject.ErrorKategoriNotFound
 		}
 		return err
 	}
 	return nil
 }
 
-func (r menuRepository) Update(ctx context.Context, m entity.Menu) error {
+func (r menuRepository) Update(ctx context.Context, m valueobject.Menu) error {
 	updatedAt := time.Now()
 	query := "UPDATE menus SET nama=$1, deskripsi=$2, harga=$3, kategori_id=$4, url_foto=$5, deleted_at=$6, updated_at=$7 WHERE id=$8"
 	_, err := r.db.Exec(ctx, query, m.Nama, m.Deskripsi, m.Harga, m.Kategori.ID, m.Url, m.DeletedAt, updatedAt, m.ID)
 	if err != nil {
 		// Violate Foreign Key err by PG error code.
 		if strings.Contains(err.Error(), "23503") {
-			return entity.ErrorKategoriNotFound
+			return valueobject.ErrorKategoriNotFound
 		}
 		return err
 	}
 	return nil
 }
 
-func (r menuRepository) Select(ctx context.Context) ([]entity.Menu, error) {
+func (r menuRepository) Select(ctx context.Context) ([]valueobject.Menu, error) {
 	query := querySelectMenu + " WHERE m.deleted_at IS NULL"
 
 	rows, err := r.db.Query(ctx, query)
@@ -131,9 +131,9 @@ func (r menuRepository) Select(ctx context.Context) ([]entity.Menu, error) {
 	}
 	defer rows.Close()
 
-	var menus []entity.Menu
+	var menus []valueobject.Menu
 	for rows.Next() {
-		var m entity.Menu
+		var m valueobject.Menu
 
 		if err := m.ScanRow(rows); err != nil {
 			return nil, err
@@ -144,14 +144,14 @@ func (r menuRepository) Select(ctx context.Context) ([]entity.Menu, error) {
 	return menus, nil
 }
 
-func (r menuRepository) SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Menu, error) {
+func (r menuRepository) SelectWhere(ctx context.Context, field string, searchVal any) (*valueobject.Menu, error) {
 	query := querySelectMenu + fmt.Sprintf(" WHERE m.%s=$1 AND m.deleted_at IS NULL", field)
 	row := r.db.QueryRow(ctx, query, searchVal)
 
-	var menu entity.Menu
+	var menu valueobject.Menu
 	if err := menu.ScanRow(row); err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, entity.ErrorMenuNotFound
+			return nil, valueobject.ErrorMenuNotFound
 		}
 		return nil, err
 	}
