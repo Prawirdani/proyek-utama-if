@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrorMetodePembayaranDuplicate = httputil.ErrBadRequest("Metode pembayaran yang sama sudah ada!")
+	ErrorMetodePembayaranDuplicate = httputil.ErrConflict("Metode pembayaran yang sama sudah ada!")
 	ErrorMetodePembayaranNotFound  = httputil.ErrNotFound("Metode pembayaran tidak ditemukan!")
 )
 
