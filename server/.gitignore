@@ -3,4 +3,5 @@ tmp
 /cmd/api/bin
 /config/config.yml
 .env
+/uploads
 
