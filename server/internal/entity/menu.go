@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/pkg/httputil"
 )
@@ -22,16 +23,12 @@ func capitalizeFirstLetter(str string) string {
 type KategoriMenu struct {
 	ID        int        `json:"id"`
 	Nama      string     `json:"nama"`
-	DeletedAt *time.Time `json:"deletedAt"`
+	DeletedAt *time.Time `json:"-"`
 }
 
 func (k *KategoriMenu) SetDeletedAt() {
 	t := time.Now()
 	k.DeletedAt = &t
-}
-
-func (k KategoriMenu) NameEqual(nama string) bool {
-	return strings.EqualFold(k.Nama, nama)
 }
 
 func (k *KategoriMenu) ScanRow(r Row) error {
@@ -55,7 +52,7 @@ type Menu struct {
 	Harga     int          `json:"harga"`
 	Kategori  KategoriMenu `json:"kategori"`
 	Url       *string      `json:"url"`
-	DeletedAt *time.Time   `json:"deletedAt"`
+	DeletedAt *time.Time   `json:"-"`
 	CreatedAt time.Time    `json:"createdAt"`
 	UpdatedAt time.Time    `json:"updatedAt"`
 }
@@ -80,11 +77,26 @@ func (m *Menu) Assign(request model.UpdateMenuRequest) {
 	m.Deskripsi = *request.Deskripsi
 	m.Harga = request.Harga
 	m.Kategori.ID = request.KategoriId
+	m.Url = request.ImageName
 }
 
 func (m *Menu) SetDeletedAt() {
 	t := time.Now()
 	m.DeletedAt = &t
+}
+
+func (m *Menu) FormatURL(cfg *config.Config) {
+	if m.Url != nil {
+		var host string
+		if !cfg.IsProduction() {
+			host = fmt.Sprintf("http://localhost:%v", cfg.App.Port)
+		} else {
+			host = fmt.Sprintf("https://%s", cfg.App.DNS)
+		}
+
+		url := fmt.Sprintf("%s/api/images/%s", host, *m.Url)
+		m.Url = &url
+	}
 }
 
 func NewMenu(request model.CreateMenuRequest) Menu {
@@ -95,5 +107,6 @@ func NewMenu(request model.CreateMenuRequest) Menu {
 		Kategori: KategoriMenu{
 			ID: request.KategoriId,
 		},
+		Url: request.ImageName,
 	}
 }
