@@ -11,26 +11,26 @@ import (
 	"github.com/prawirdani/golang-restapi/internal/valueobject"
 )
 
-type PaymentRepository interface {
+type PembayaranRepository interface {
 	InsertMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error
 	SelectMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error)
 	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*valueobject.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error
 }
 
-type paymentRepository struct {
+type pembayaranRepository struct {
 	db  *pgxpool.Pool
 	cfg *config.Config
 }
 
-func NewPaymentRepository(db *pgxpool.Pool, cfg *config.Config) PaymentRepository {
-	return &paymentRepository{
+func NewPembayaranRepository(db *pgxpool.Pool, cfg *config.Config) PembayaranRepository {
+	return &pembayaranRepository{
 		db:  db,
 		cfg: cfg,
 	}
 }
 
-func (r paymentRepository) InsertMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
+func (r pembayaranRepository) InsertMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
 	query := "INSERT INTO metode_pembayaran (tipe_pembayaran, metode, deskripsi) VALUES ($1, $2, $3)"
 
 	_, err := r.db.Exec(ctx, query, mp.TipePembayaran, mp.Metode, mp.Deskripsi)
@@ -45,7 +45,7 @@ func (r paymentRepository) InsertMetodePembayaran(ctx context.Context, mp valueo
 	return nil
 }
 
-func (r paymentRepository) SelectMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error) {
+func (r pembayaranRepository) SelectMetodePembayaran(ctx context.Context) ([]valueobject.MetodePembayaran, error) {
 	query := "SELECT id, tipe_pembayaran, metode, deskripsi, deleted_at FROM metode_pembayaran WHERE deleted_at IS NULL"
 
 	rows, err := r.db.Query(ctx, query)
@@ -67,7 +67,7 @@ func (r paymentRepository) SelectMetodePembayaran(ctx context.Context) ([]valueo
 	return metodePembayaran, nil
 }
 
-func (r paymentRepository) SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*valueobject.MetodePembayaran, error) {
+func (r pembayaranRepository) SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*valueobject.MetodePembayaran, error) {
 	query := fmt.Sprintf("SELECT id, tipe_pembayaran, metode, deskripsi, deleted_at FROM metode_pembayaran WHERE %s=$1 AND deleted_at IS NULL", field)
 
 	row := r.db.QueryRow(ctx, query, searchVal)
@@ -84,7 +84,7 @@ func (r paymentRepository) SelectMetodePembayaranWhere(ctx context.Context, fiel
 	return &mp, nil
 }
 
-func (r paymentRepository) UpdateMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
+func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp valueobject.MetodePembayaran) error {
 	query := "UPDATE metode_pembayaran SET tipe_pembayaran=$1, metode=$2, deskripsi=$3, deleted_at=$4 WHERE id=$5"
 	_, err := r.db.Exec(ctx, query, mp.TipePembayaran, mp.Metode, mp.Deskripsi, mp.DeletedAt, mp.ID)
 	if err != nil {
