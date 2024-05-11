@@ -1,1 +1,1 @@
-DROP TABLE kategori_menu;
+DROP TABLE IF EXISTS kategori_menu;
