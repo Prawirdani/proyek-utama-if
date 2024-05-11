@@ -168,14 +168,26 @@ func (h MenuHandler) HandleUpdateMenu(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	imageName, err := httputil.UploadHandler(r, "image")
+	// check if new image is included
+	updateImage := true
+	_, _, err = r.FormFile("image")
 	if err != nil {
-		return err
+		if err == http.ErrMissingFile {
+			updateImage = false
+		} else {
+			return err
+		}
 	}
-	menuData.ImageName = imageName
+
+	if updateImage {
+		imageName, err := httputil.UploadHandler(r, "image")
+		menuData.ImageName = imageName
+		if err != nil {
+			return err
+		}
+	}
 
 	if err := h.menuUC.UpdateMenu(r.Context(), menuData); err != nil {
-		httputil.DeleteUpload(*imageName)
 		return err
 	}
 

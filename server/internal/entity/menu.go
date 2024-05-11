@@ -77,7 +77,9 @@ func (m *Menu) Assign(request model.UpdateMenuRequest) {
 	m.Deskripsi = *request.Deskripsi
 	m.Harga = request.Harga
 	m.Kategori.ID = request.KategoriId
-	m.Url = request.ImageName
+	if request.ImageName != nil {
+		m.Url = request.ImageName
+	}
 }
 
 func (m *Menu) SetDeletedAt() {
