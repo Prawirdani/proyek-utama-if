@@ -16,7 +16,7 @@ var (
 type Meja struct {
 	ID        int                    `json:"id"`
 	Nomor     string                 `json:"nomor"`
-	Status    valueobject.StatusMeja `json:"status"`
+	Status    valueobject.StatusMeja `json:"status,omitempty"`
 	DeletedAt *time.Time             `json:"-"`
 }
 

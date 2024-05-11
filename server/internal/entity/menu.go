@@ -48,13 +48,13 @@ func NewKategoriMenu(request model.CreateKategoriMenuRequest) KategoriMenu {
 type Menu struct {
 	ID        int          `json:"id"`
 	Nama      string       `json:"nama"`
-	Deskripsi string       `json:"deskripsi"`
+	Deskripsi string       `json:"deskripsi,omitempty"`
 	Harga     int          `json:"harga"`
-	Kategori  KategoriMenu `json:"kategori"`
+	Kategori  KategoriMenu `json:"kategori,omitempty"`
 	Url       *string      `json:"url"`
 	DeletedAt *time.Time   `json:"-"`
-	CreatedAt time.Time    `json:"createdAt"`
-	UpdatedAt time.Time    `json:"updatedAt"`
+	CreatedAt time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt time.Time    `json:"updatedAt,omitempty"`
 }
 
 func (m *Menu) ScanRow(r Row) error {

@@ -22,13 +22,13 @@ const (
 
 type User struct {
 	ID        int
-	Nama      string   `validate:"required"`
-	Username  string   `validate:"required"`
-	Password  string   `validate:"required,min=6"`
-	Active    bool     `json:"active"`
-	Role      UserRole `json:"role"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Nama      string    `json:"nama" validate:"required"`
+	Username  string    `json:"username" validate:"required"`
+	Password  string    `json:"-" validate:"required,min=6"`
+	Active    bool      `json:"active,omitempty"`
+	Role      UserRole  `json:"role,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 }
 
 // Create new user from request payload
