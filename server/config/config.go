@@ -32,6 +32,7 @@ type AppConfig struct {
 	Version     string
 	Port        int
 	Environment AppEnv
+	DNS         string
 }
 
 type ContextConfig struct {
