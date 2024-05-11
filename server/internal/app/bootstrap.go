@@ -13,14 +13,17 @@ func (s Server) bootstrap() {
 	// Setup Repos
 	userRepository := repository.NewUserRepository(s.pg, "users")
 	menuRepository := repository.NewMenuRepository(s.pg, s.cfg)
+	mejaRepository := repository.NewMejaRepository(s.pg, s.cfg)
 
 	// Setup Usecases
 	authUC := usecase.NewAuthUseCase(s.cfg, userRepository)
 	menuUC := usecase.NewMenuUsecase(menuRepository, s.cfg)
+	mejaUC := usecase.NewMejaUseCase(mejaRepository, s.cfg)
 
 	// Setup Handlers
 	authHandler := http.NewAuthHandler(s.cfg, authUC)
 	menuHandler := http.NewMenuHandler(s.cfg, menuUC)
+	mejaHandler := http.NewMejaHandler(s.cfg, mejaUC)
 
 	middlewares := middleware.NewMiddlewareManager(s.cfg)
 
@@ -31,5 +34,6 @@ func (s Server) bootstrap() {
 	s.router.Route("/api/v1", func(v1 chi.Router) {
 		http.MapAuthRoutes(v1, authHandler, middlewares)
 		http.MapMenuRoutes(v1, menuHandler, middlewares)
+		http.MapMejaRoutes(v1, mejaHandler, middlewares)
 	})
 }

@@ -32,6 +32,16 @@ func MapMenuRoutes(r chi.Router, h MenuHandler, mw middleware.MiddlewareManager)
 	})
 }
 
+func MapMejaRoutes(r chi.Router, h MejaHandler, mw middleware.MiddlewareManager) {
+	r.With(mw.Authenticate).Group(func(subR chi.Router) {
+		subR.Post("/meja", handlerFn(h.HandleCreateMeja))
+		subR.Get("/meja", handlerFn(h.HandleListMeja))
+		subR.Get("/meja/{mejaID}", handlerFn(h.HandleFindMeja))
+		subR.Put("/meja/{mejaID}", handlerFn(h.HandleUpdateMeja))
+		subR.Delete("/meja/{mejaID}", handlerFn(h.HandleDeleteMeja))
+	})
+}
+
 // images file server, serving images from uploads directory
 func ImagesFS(r chi.Router) {
 	uploadsDir := "./uploads"

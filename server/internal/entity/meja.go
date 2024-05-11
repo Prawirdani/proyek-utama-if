@@ -25,6 +25,10 @@ func (m *Meja) ScanRow(row Row) error {
 	return row.Scan(&m.ID, &m.Nomor, &m.Status, &m.DeletedAt)
 }
 
+func (m *Meja) Assign(request model.UpdateMejaRequest) {
+	m.Nomor = request.Nomor
+}
+
 func NewMeja(request model.CreateMejaRequest) Meja {
 	return Meja{
 		Nomor:  request.Nomor,
