@@ -5,7 +5,7 @@ type CreateKategoriMenuRequest struct {
 }
 
 type UpdateKategoriMenuRequest struct {
-	ID   int    `validate:"required"`
+	ID   int
 	Nama string `json:"nama" validate:"required"`
 }
 

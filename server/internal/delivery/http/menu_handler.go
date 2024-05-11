@@ -24,13 +24,8 @@ func NewMenuHandler(cfg *config.Config, menuUC usecase.MenuUsecase) MenuHandler 
 }
 
 func (h MenuHandler) HandleCreateKategori(w http.ResponseWriter, r *http.Request) error {
-	var reqBody model.CreateKategoriMenuRequest
-
-	if err := httputil.BindJSON(r, &reqBody); err != nil {
-		return err
-	}
-
-	if err := utils.Validate.Struct(reqBody); err != nil {
+	reqBody, err := BindAndValidate[model.CreateKategoriMenuRequest](r)
+	if err != nil {
 		return err
 	}
 
@@ -132,15 +127,11 @@ func (h MenuHandler) HandleUpdateKategori(w http.ResponseWriter, r *http.Request
 		return httputil.ErrBadRequest("ID Kategori tidak valid!")
 	}
 
-	var reqBody model.UpdateKategoriMenuRequest
-	if err := httputil.BindJSON(r, &reqBody); err != nil {
+	reqBody, err := BindAndValidate[model.UpdateKategoriMenuRequest](r)
+	if err != nil {
 		return err
 	}
 	reqBody.ID = id
-
-	if err := utils.Validate.Struct(reqBody); err != nil {
-		return err
-	}
 
 	if err := h.menuUC.UpdateKategori(r.Context(), reqBody); err != nil {
 		return err
