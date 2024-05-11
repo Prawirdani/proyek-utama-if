@@ -16,9 +16,9 @@ var (
 
 type MetodePembayaran struct {
 	ID             int                        `json:"id"`
-	TipePembayaran valueobject.TipePembayaran `json:"tipePembayaran"`
+	TipePembayaran valueobject.TipePembayaran `json:"tipePembayaran,omitempty"`
 	Metode         string                     `json:"metode"`
-	Deskripsi      string                     `json:"deskripsi"`
+	Deskripsi      string                     `json:"deskripsi,omitempty"`
 	DeletedAt      *time.Time                 `json:"-"`
 }
 
