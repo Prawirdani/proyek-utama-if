@@ -149,7 +149,6 @@ func (r menuRepository) SelectWhere(ctx context.Context, field string, searchVal
 		}
 		return nil, err
 	}
-	menu.FormatURL(r.cfg)
 	return &menu, nil
 }
 
