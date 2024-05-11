@@ -36,7 +36,7 @@ func (m mejaRepository) Insert(ctx context.Context, meja entity.Meja) error {
 	if err != nil {
 		// Duplicate Unique Key error
 		if strings.Contains(err.Error(), "23505") {
-			return entity.ErrorDuplicateNomorMeja
+			return entity.ErrorMejaDuplicate
 		}
 		return err
 	}
@@ -86,7 +86,7 @@ func (m mejaRepository) Update(ctx context.Context, meja entity.Meja) error {
 	if err != nil {
 		// Duplicate Unique Key error
 		if strings.Contains(err.Error(), "23505") {
-			return entity.ErrorDuplicateNomorMeja
+			return entity.ErrorMejaDuplicate
 		}
 		return err
 	}

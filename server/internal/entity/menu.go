@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ErrorDuplicateKategori = httputil.ErrConflict("Kategori dengan nama tersebut sudah ada!")
+	ErrorKategoriDuplicate = httputil.ErrConflict("Kategori dengan nama tersebut sudah ada!")
 	ErrorKategoriNotFound  = httputil.ErrNotFound("Kategori tidak ditemukan.")
 	ErrorMenuNotFound      = httputil.ErrNotFound("Menu tidak ditemukan.")
 )

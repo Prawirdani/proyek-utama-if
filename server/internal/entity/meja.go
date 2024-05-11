@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	ErrorDuplicateNomorMeja = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
-	ErrorMejaNotFound       = httputil.ErrConflict("Meja tidak ditemukan!")
+	ErrorMejaDuplicate = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
+	ErrorMejaNotFound  = httputil.ErrConflict("Meja tidak ditemukan!")
 )
 
 type Meja struct {
