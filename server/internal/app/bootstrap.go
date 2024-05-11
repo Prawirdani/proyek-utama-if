@@ -12,7 +12,7 @@ import (
 func (s Server) bootstrap() {
 	// Setup Repos
 	userRepository := repository.NewUserRepository(s.pg, "users")
-	menuRepository := repository.NewMenuRepository(s.pg)
+	menuRepository := repository.NewMenuRepository(s.pg, s.cfg)
 
 	// Setup Usecases
 	authUC := usecase.NewAuthUseCase(s.cfg, userRepository)
@@ -23,6 +23,10 @@ func (s Server) bootstrap() {
 	menuHandler := http.NewMenuHandler(s.cfg, menuUC)
 
 	middlewares := middleware.NewMiddlewareManager(s.cfg)
+
+	s.router.Route("/api", func(r chi.Router) {
+		http.ImagesFS(r)
+	})
 
 	s.router.Route("/api/v1", func(v1 chi.Router) {
 		http.MapAuthRoutes(v1, authHandler, middlewares)
