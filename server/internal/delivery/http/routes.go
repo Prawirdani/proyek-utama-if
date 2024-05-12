@@ -44,8 +44,13 @@ func MapMejaRoutes(r chi.Router, h MejaHandler, mw middleware.MiddlewareManager)
 
 func MapPesananRoutes(r chi.Router, h PesananHandler, mw middleware.MiddlewareManager) {
 	r.With(mw.Authenticate).Group(func(subR chi.Router) {
+		subR.Get("/orders", handlerFn(h.HandleListPesanan))
 		subR.Post("/orders/dinein", handlerFn(h.HandlePesananDineIn))
 		subR.Post("/orders/takeaway", handlerFn(h.HandlePesananTakeAway))
+		subR.Get("/orders/{pesananID}", handlerFn(h.HandleFindPesanan))
+		subR.Put("/orders/{pesananID}/cancel", handlerFn(h.HandleBatalkanPesanan))
+		subR.Put("/orders/{pesananID}/add-menu", handlerFn(h.HandleAddMenu))
+		subR.Delete("/orders/{pesananID}/{detailID}", handlerFn(h.HandleRemoveMenu))
 	})
 }
 

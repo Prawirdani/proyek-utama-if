@@ -13,10 +13,13 @@ import (
 type PesananUseCase interface {
 	CreateDineIn(ctx context.Context, request model.PesananDineInRequest) error
 	CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) error
+	ListPesanan(ctx context.Context) ([]entity.Pesanan, error)
+	FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error)
+	AddMenuToPesanan(ctx context.Context, pesananID int, request model.PesananMenuRequest) error
+	RemoveMenuFromPesanan(ctx context.Context, pesananID int, detailID int) error
+	BatalkanPesanan(ctx context.Context, pesananID int) error
 	// FinishPesanan()
 	// CancelPesanan()
-	// AddMenuToPesanan()
-	// RemoveMenuFromPesanan()
 	// SetCatatan()
 }
 
@@ -45,25 +48,19 @@ func (pu pesananUseCase) CreateDineIn(ctx context.Context, request model.Pesanan
 	if err != nil {
 		return err
 	}
-
-	// Return error if not tersedia
+	// Return error if meja not tersedia
 	if !meja.Tersedia() {
 		return entity.ErrorMejaTidakTersedia
 	}
 
 	// Create new PesananDineIn
 	pesanan := entity.NewPesananDineIn(request)
-
 	// Retrieve menus & assign to Pesanan Detail
 	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
 		return err
 	}
 
-	if err := pu.pesananRepo.Insert(ctxWT, pesanan); err != nil {
-		return err
-	}
-
-	return nil
+	return pu.pesananRepo.Insert(ctxWT, pesanan)
 }
 
 func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) error {
@@ -71,16 +68,82 @@ func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.Pesan
 	defer cancel()
 
 	pesanan := entity.NewPesananTakeAway(request)
-
 	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
 		return err
 	}
 
-	if err := pu.pesananRepo.Insert(ctxWT, pesanan); err != nil {
+	return pu.pesananRepo.Insert(ctxWT, pesanan)
+}
+
+func (pu pesananUseCase) ListPesanan(ctx context.Context) ([]entity.Pesanan, error) {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
+	defer cancel()
+
+	return pu.pesananRepo.Select(ctxWT)
+}
+
+func (pu pesananUseCase) FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error) {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
+	defer cancel()
+	return pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
+}
+
+func (pu pesananUseCase) AddMenuToPesanan(ctx context.Context, pesananID int, request model.PesananMenuRequest) error {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout*int(time.Second)))
+	defer cancel()
+
+	pesanan, err := pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
+	if err != nil {
 		return err
 	}
 
-	return nil
+	err = menusToDetails(ctxWT, pu.menuRepo, pesanan, request)
+	if err != nil {
+		return err
+	}
+
+	err = pu.pesananRepo.Update(ctxWT, *pesanan)
+
+	return err
+}
+
+func (pu pesananUseCase) BatalkanPesanan(ctx context.Context, pesananID int) error {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout*int(time.Second)))
+	defer cancel()
+
+	pesanan, err := pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
+	if err != nil {
+		return err
+	}
+
+	err = pesanan.Batalkan()
+	if err != nil {
+		return err
+	}
+
+	err = pu.pesananRepo.Update(ctxWT, *pesanan)
+	return err
+}
+
+func (pu pesananUseCase) RemoveMenuFromPesanan(ctx context.Context, pesananID int, detailID int) error {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout*int(time.Second)))
+	defer cancel()
+
+	pesanan, err := pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
+	if err != nil {
+		return err
+	}
+
+	err = pesanan.RemoveDetail(detailID)
+	if err != nil {
+		return err
+	}
+
+	err = pu.pesananRepo.DeleteDetail(ctxWT, *pesanan, detailID)
+	if err != nil {
+		return err
+	}
+	return err
 }
 
 // TODO: Should batch select rather that retrieve one by one
@@ -97,7 +160,6 @@ func menusToDetails(ctx context.Context, repo repository.MenuRepository, pesanan
 		if err != nil {
 			return err
 		}
-
 		// Add detail to Pesanan
 		pesanan.AddDetail(detail)
 	}
