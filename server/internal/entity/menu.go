@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -21,8 +22,8 @@ func capitalizeFirstLetter(str string) string {
 }
 
 type KategoriMenu struct {
-	ID        int        `json:"id"`
-	Nama      string     `json:"nama"`
+	ID        int        `json:"id,omitempty"`
+	Nama      string     `json:"nama,omitempty"`
 	DeletedAt *time.Time `json:"-"`
 }
 
@@ -46,19 +47,23 @@ func NewKategoriMenu(request model.CreateKategoriMenuRequest) KategoriMenu {
 }
 
 type Menu struct {
-	ID        int          `json:"id"`
-	Nama      string       `json:"nama"`
-	Deskripsi string       `json:"deskripsi,omitempty"`
-	Harga     int          `json:"harga"`
-	Kategori  KategoriMenu `json:"kategori,omitempty"`
-	Url       *string      `json:"url"`
-	DeletedAt *time.Time   `json:"-"`
-	CreatedAt time.Time    `json:"createdAt,omitempty"`
-	UpdatedAt time.Time    `json:"updatedAt,omitempty"`
+	ID        int           `json:"id,omitempty"`
+	Nama      string        `json:"nama"`
+	Deskripsi string        `json:"deskripsi,omitempty"`
+	Harga     int           `json:"harga"`
+	Kategori  *KategoriMenu `json:"kategori,omitempty"`
+	Url       *string       `json:"url,omitempty"`
+	DeletedAt *time.Time    `json:"-"`
+	CreatedAt *time.Time    `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time    `json:"updatedAt,omitempty"`
 }
 
 func (m *Menu) ScanRow(r Row) error {
-	return r.Scan(&m.ID,
+	kategoriID := sql.NullInt64{}
+	kategoriNama := sql.NullString{}
+	kategoriDeletedAt := sql.NullTime{}
+
+	err := r.Scan(&m.ID,
 		&m.Nama,
 		&m.Deskripsi,
 		&m.Harga,
@@ -66,10 +71,22 @@ func (m *Menu) ScanRow(r Row) error {
 		&m.DeletedAt,
 		&m.CreatedAt,
 		&m.UpdatedAt,
-		&m.Kategori.ID,
-		&m.Kategori.Nama,
-		&m.Kategori.DeletedAt,
+		&kategoriID,
+		&kategoriNama,
+		&kategoriDeletedAt,
 	)
+	if err != nil {
+		return err
+	}
+
+	if kategoriID.Valid {
+		m.Kategori = &KategoriMenu{
+			ID:        int(kategoriID.Int64),
+			Nama:      kategoriNama.String,
+			DeletedAt: &kategoriDeletedAt.Time,
+		}
+	}
+	return nil
 }
 
 func (m *Menu) Assign(request model.UpdateMenuRequest) {
@@ -116,7 +133,7 @@ func NewMenu(request model.CreateMenuRequest) Menu {
 		Nama:      capitalizeFirstLetter(request.Nama),
 		Deskripsi: *request.Deskripsi,
 		Harga:     request.Harga,
-		Kategori: KategoriMenu{
+		Kategori: &KategoriMenu{
 			ID: request.KategoriId,
 		},
 		Url: request.ImageName,
