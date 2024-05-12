@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ErrorMejaDuplicate = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
-	ErrorMejaNotFound  = httputil.ErrConflict("Meja tidak ditemukan!")
+	ErrorMejaDuplicate     = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
+	ErrorMejaNotFound      = httputil.ErrConflict("Meja tidak ditemukan!")
+	ErrorMejaTidakTersedia = httputil.ErrConflict("Meja tidak tersedia!")
 )
 
 type Meja struct {
@@ -18,6 +19,18 @@ type Meja struct {
 	Nomor     string                 `json:"nomor"`
 	Status    valueobject.StatusMeja `json:"status,omitempty"`
 	DeletedAt *time.Time             `json:"-"`
+}
+
+func (m Meja) Tersedia() bool {
+	return m.Status == valueobject.StatusMejaTersedia
+}
+
+func (m Meja) Reserved() bool {
+	return m.Status == valueobject.StatusMejaReserved
+}
+
+func (m Meja) Terisi() bool {
+	return m.Status == valueobject.StatusMejaTerisi
 }
 
 func (m *Meja) ScanRow(row Row) error {
