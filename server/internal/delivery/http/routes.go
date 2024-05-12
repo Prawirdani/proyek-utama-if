@@ -42,6 +42,13 @@ func MapMejaRoutes(r chi.Router, h MejaHandler, mw middleware.MiddlewareManager)
 	})
 }
 
+func MapPesananRoutes(r chi.Router, h PesananHandler, mw middleware.MiddlewareManager) {
+	r.With(mw.Authenticate).Group(func(subR chi.Router) {
+		subR.Post("/orders/dinein", handlerFn(h.HandlePesananDineIn))
+		subR.Post("/orders/takeaway", handlerFn(h.HandlePesananTakeAway))
+	})
+}
+
 func MapPembayaranRoutes(r chi.Router, h PembayaranHandler, mw middleware.MiddlewareManager) {
 	r.With(mw.Authenticate).Group(func(subR chi.Router) {
 		subR.Post("/payments/methods", handlerFn(h.HandleCreateMetodePembayaran))
