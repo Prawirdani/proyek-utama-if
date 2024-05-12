@@ -66,10 +66,10 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) error 
 	_, err = tx.CopyFrom(
 		ctx,
 		pgx.Identifier{"detail_pesanan"},
-		[]string{"pesanan_id", "menu_id", "kuantitas", "subtotal"},
+		[]string{"pesanan_id", "menu_id", "harga", "kuantitas", "subtotal"},
 		pgx.CopyFromSlice(len(p.Detail), func(i int) ([]interface{}, error) {
 			d := p.Detail[i]
-			return []interface{}{pesananID, d.Menu.ID, d.Kuantitas, d.Subtotal}, nil
+			return []interface{}{pesananID, d.Menu.ID, d.Menu.Harga, d.Kuantitas, d.Subtotal}, nil
 		}),
 	)
 	if err != nil {
