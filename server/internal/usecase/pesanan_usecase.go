@@ -55,7 +55,7 @@ func (pu pesananUseCase) CreateDineIn(ctx context.Context, request model.Pesanan
 	pesanan := entity.NewPesananDineIn(request)
 
 	// Retrieve menus & assign to Pesanan Detail
-	if err := addDetailsToPesanan(ctxWT, pu.menuRepo, &pesanan, request.Detail...); err != nil {
+	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
 		return err
 	}
 
@@ -72,7 +72,7 @@ func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.Pesan
 
 	pesanan := entity.NewPesananTakeAway(request)
 
-	if err := addDetailsToPesanan(ctxWT, pu.menuRepo, &pesanan, request.Detail...); err != nil {
+	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.Pesan
 }
 
 // TODO: Should batch select rather that retrieve one by one
-func addDetailsToPesanan(ctx context.Context, repo repository.MenuRepository, pesanan *entity.Pesanan, dr ...model.DetailPesananRequest) error {
+func menusToDetails(ctx context.Context, repo repository.MenuRepository, pesanan *entity.Pesanan, dr ...model.PesananMenuRequest) error {
 	for i := 0; i < len(dr); i++ {
 		d := dr[i]
 

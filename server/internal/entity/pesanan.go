@@ -31,6 +31,7 @@ func NewPesananDineIn(req model.PesananDineInRequest) Pesanan {
 		},
 		TipePesanan:   valueobject.TipePesananDineIn,
 		StatusPesanan: valueobject.StatusPesananDiProses,
+		Catatan:       req.Catatan,
 		WaktuPesanan:  time.Now(),
 	}
 }
@@ -43,6 +44,7 @@ func NewPesananTakeAway(req model.PesananTakeAwayRequest) Pesanan {
 		},
 		TipePesanan:   valueobject.TipePesananTakeAway,
 		StatusPesanan: valueobject.StatusPesananDiProses,
+		Catatan:       req.Catatan,
 		WaktuPesanan:  time.Now(),
 	}
 }

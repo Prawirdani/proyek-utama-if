@@ -28,7 +28,7 @@ var menus = []Menu{
 }
 
 var note = "Pesanan note"
-var detailRequest = []model.DetailPesananRequest{
+var detailRequest = []model.PesananMenuRequest{
 	{MenuID: menus[0].ID, Kuantitas: 2},
 	{MenuID: menus[1].ID, Kuantitas: 1},
 }
