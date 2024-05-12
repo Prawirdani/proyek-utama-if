@@ -18,8 +18,7 @@ type PesananUseCase interface {
 	AddMenuToPesanan(ctx context.Context, pesananID int, request model.PesananMenuRequest) error
 	RemoveMenuFromPesanan(ctx context.Context, pesananID int, detailID int) error
 	BatalkanPesanan(ctx context.Context, pesananID int) error
-	// FinishPesanan()
-	// CancelPesanan()
+	SelesaikanPesanan(ctx context.Context, pesananID int) error
 	// SetCatatan()
 }
 
@@ -117,6 +116,24 @@ func (pu pesananUseCase) BatalkanPesanan(ctx context.Context, pesananID int) err
 	}
 
 	err = pesanan.Batalkan()
+	if err != nil {
+		return err
+	}
+
+	err = pu.pesananRepo.Update(ctxWT, *pesanan)
+	return err
+}
+
+func (pu pesananUseCase) SelesaikanPesanan(ctx context.Context, pesananID int) error {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout*int(time.Second)))
+	defer cancel()
+
+	pesanan, err := pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
+	if err != nil {
+		return err
+	}
+
+	err = pesanan.Selesaikan()
 	if err != nil {
 		return err
 	}
