@@ -16,17 +16,27 @@ type PembayaranUseCase interface {
 	FindMetodePembayaran(ctx context.Context, id int) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, request model.UpdateMetodePembayaranRequest) error
 	RemoveMetodePembayaran(ctx context.Context, id int) error
+	BayarPesanan(ctx context.Context, request model.PembayaranRequest) error
 }
 
 type pembayaranUsecase struct {
 	pembayaranRepo repository.PembayaranRepository
+	pesananRepo    repository.PesananRepository
+	mejaRepo       repository.MejaRepository
 	cfg            *config.Config
 }
 
-func NewPembayaranUsecase(pembayaranRepo repository.PembayaranRepository, cfg *config.Config) pembayaranUsecase {
+func NewPembayaranUsecase(
+	cfg *config.Config,
+	pembayaranRepo repository.PembayaranRepository,
+	pesananRepo repository.PesananRepository,
+	mejaRepo repository.MejaRepository,
+) pembayaranUsecase {
 	return pembayaranUsecase{
-		pembayaranRepo: pembayaranRepo,
 		cfg:            cfg,
+		pembayaranRepo: pembayaranRepo,
+		pesananRepo:    pesananRepo,
+		mejaRepo:       mejaRepo,
 	}
 }
 
@@ -109,4 +119,30 @@ func (u pembayaranUsecase) RemoveMetodePembayaran(ctx context.Context, id int) e
 	}
 
 	return nil
+}
+
+func (u pembayaranUsecase) BayarPesanan(ctx context.Context, request model.PembayaranRequest) error {
+	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout)*time.Second)
+	defer cancel()
+
+	// Find Pesanan
+	pesanan, err := u.pesananRepo.SelectWhere(ctxWT, "p.id", request.PesananId)
+	if err != nil {
+		return err
+	}
+	// Set pesanan to selesai
+	if err := pesanan.Selesaikan(); err != nil {
+		return err
+	}
+
+	// Find Metode Pembayaran
+	metodePembayaran, err := u.pembayaranRepo.SelectMetodePembayaranWhere(ctxWT, "id", request.MetodePembayaranId)
+	if err != nil {
+		return err
+	}
+
+	// Create Pembayaran
+	pembayaran := entity.NewPembayaran(*pesanan, *metodePembayaran)
+
+	return u.pembayaranRepo.CreatePembayaran(ctxWT, *pesanan, *pembayaran)
 }
