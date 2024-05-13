@@ -18,7 +18,6 @@ type PesananUseCase interface {
 	AddMenuToPesanan(ctx context.Context, pesananID int, request model.PesananMenuRequest) error
 	RemoveMenuFromPesanan(ctx context.Context, pesananID int, detailID int) error
 	BatalkanPesanan(ctx context.Context, pesananID int) error
-	SelesaikanPesanan(ctx context.Context, pesananID int) error
 	// SetCatatan()
 }
 
@@ -47,13 +46,13 @@ func (pu pesananUseCase) CreateDineIn(ctx context.Context, request model.Pesanan
 	if err != nil {
 		return err
 	}
-	// Return error if meja not tersedia
-	if !meja.Tersedia() {
-		return entity.ErrorMejaTidakTersedia
-	}
 
 	// Create new PesananDineIn
-	pesanan := entity.NewPesananDineIn(request)
+	pesanan, err := entity.NewPesananDineIn(request, meja)
+	if err != nil {
+		return err
+	}
+
 	// Retrieve menus & assign to Pesanan Detail
 	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
 		return err
@@ -116,24 +115,6 @@ func (pu pesananUseCase) BatalkanPesanan(ctx context.Context, pesananID int) err
 	}
 
 	err = pesanan.Batalkan()
-	if err != nil {
-		return err
-	}
-
-	err = pu.pesananRepo.Update(ctxWT, *pesanan)
-	return err
-}
-
-func (pu pesananUseCase) SelesaikanPesanan(ctx context.Context, pesananID int) error {
-	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout*int(time.Second)))
-	defer cancel()
-
-	pesanan, err := pu.pesananRepo.SelectWhere(ctxWT, "p.id", pesananID)
-	if err != nil {
-		return err
-	}
-
-	err = pesanan.Selesaikan()
 	if err != nil {
 		return err
 	}
