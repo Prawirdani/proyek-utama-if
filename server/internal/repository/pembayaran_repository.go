@@ -119,8 +119,8 @@ func (r pembayaranRepository) CreatePembayaran(ctx context.Context, pesanan enti
 		return err
 	}
 
-	// Update meja if pesanan.Meja is not nil (Pesanan Dine In)
-	if pesanan.Meja != nil {
+	// Update meja if Pesanan Dine In
+	if pesanan.IsDineIn() {
 		if err := updateMeja(ctx, tx, *pesanan.Meja); err != nil {
 			return err
 		}
