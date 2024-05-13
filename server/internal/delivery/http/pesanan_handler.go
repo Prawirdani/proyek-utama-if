@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/prawirdani/golang-restapi/config"
+	"github.com/prawirdani/golang-restapi/internal/entity"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/internal/usecase"
 	"github.com/prawirdani/golang-restapi/pkg/httputil"
@@ -60,8 +61,8 @@ func (ph PesananHandler) HandleListPesanan(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return err
 	}
-
-	return response(w, status(http.StatusOK), data(ps))
+	resData := ToResponseList(ps, entity.Pesanan.ToResponse)
+	return response(w, status(http.StatusOK), data(resData))
 }
 
 func (ph PesananHandler) HandleFindPesanan(w http.ResponseWriter, r *http.Request) error {
@@ -75,7 +76,7 @@ func (ph PesananHandler) HandleFindPesanan(w http.ResponseWriter, r *http.Reques
 		return err
 	}
 
-	return response(w, status(http.StatusOK), data(pesanan))
+	return response(w, status(http.StatusOK), data(pesanan.ToResponse()))
 }
 
 func (ph PesananHandler) HandleAddMenu(w http.ResponseWriter, r *http.Request) error {
