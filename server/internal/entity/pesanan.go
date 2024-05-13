@@ -18,16 +18,16 @@ var (
 )
 
 type Pesanan struct {
-	ID            int                       `json:"id"`
-	NamaPelanggan string                    `json:"namaPelanggan"`
-	Kasir         User                      `json:"kasir"`
-	Meja          *Meja                     `json:"meja"`
-	TipePesanan   valueobject.TipePesanan   `json:"tipe"`
-	StatusPesanan valueobject.StatusPesanan `json:"status"`
-	Detail        []DetailPesanan           `json:"detailPesanan"`
-	Catatan       *string                   `json:"catatan"`
-	Total         int                       `json:"total"`
-	WaktuPesanan  time.Time                 `json:"waktuPesanan"`
+	ID            int
+	NamaPelanggan string
+	Kasir         User
+	Meja          *Meja
+	TipePesanan   valueobject.TipePesanan
+	StatusPesanan valueobject.StatusPesanan
+	Detail        []DetailPesanan
+	Catatan       *string
+	Total         int
+	WaktuPesanan  time.Time
 }
 
 func NewPesananDineIn(req model.PesananDineInRequest, meja *Meja) (Pesanan, error) {
