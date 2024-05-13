@@ -73,6 +73,13 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) error 
 		return err
 	}
 
+	// if pesanan is dine in update meja status to terisi
+	if p.IsDineIn() {
+		if err := updateMeja(ctx, tx, *p.Meja); err != nil {
+			return err
+		}
+	}
+
 	return tx.Commit(ctx)
 }
 
@@ -158,6 +165,12 @@ func (pr pesananRepository) Update(ctx context.Context, pesanan entity.Pesanan) 
 		}
 	}
 
+	if pesanan.IsDineIn() {
+		if err := updateMeja(ctx, tx, *pesanan.Meja); err != nil {
+			return err
+		}
+	}
+
 	return tx.Commit(ctx)
 }
 
@@ -238,7 +251,7 @@ var (
 	SELECT 
 	p.id, p.nama_pelanggan, p.total, p.tipe_pesanan, p.status_pesanan, p.catatan, p.waktu_pesanan,
 	k.nama,
-	m.id, m.nomor
+	m.id, m.nomor, m.status
 	FROM pesanan AS p
 		JOIN users AS k ON p.kasir_id = k.id
 		LEFT JOIN meja AS m ON p.meja_id = m.id
