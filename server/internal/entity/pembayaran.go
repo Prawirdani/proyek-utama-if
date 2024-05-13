@@ -9,3 +9,12 @@ type Pembayaran struct {
 	Jumlah          int              `json:"jumlah"`
 	WaktuPembayaran time.Time        `json:"waktu_pembayaran"`
 }
+
+func NewPembayaran(pesanan Pesanan, metode MetodePembayaran) *Pembayaran {
+	return &Pembayaran{
+		PesananId:       pesanan.ID,
+		Metode:          metode,
+		Jumlah:          pesanan.Total,
+		WaktuPembayaran: time.Now(),
+	}
+}
