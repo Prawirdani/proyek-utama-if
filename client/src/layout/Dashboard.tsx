@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { Outlet } from 'react-router-dom';
 
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,10 +16,10 @@ export default function Dashboard() {
         {/* Header component */}
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         {/* Header component */}
-
         {/* Main content */}
         <main className="bg-secondary h-full p-4">
           <p>Content Goes Here..</p>
+          <Outlet />
         </main>
         {/* Main content */}
       </div>
