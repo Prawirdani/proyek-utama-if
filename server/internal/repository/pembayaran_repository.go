@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -16,6 +17,7 @@ type PembayaranRepository interface {
 	SelectMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error)
 	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error
+	CreatePembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) error
 }
 
 type pembayaranRepository struct {
@@ -96,4 +98,33 @@ func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp ent
 	}
 
 	return nil
+}
+
+func (r pembayaranRepository) CreatePembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) error {
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		slog.Error("PesananRepository.CreatePembayaran.Begin", slog.Any("error", err))
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	query := "INSERT INTO pembayaran (pesanan_id, metode_pembayaran_id, jumlah, waktu_pembayaran) VALUES ($1, $2, $3, $4)"
+	_, err = tx.Exec(ctx, query, pesanan.ID, pembayaran.Metode.ID, pembayaran.Jumlah, pembayaran.WaktuPembayaran)
+	if err != nil {
+		slog.Error("PesananRepository.CreatePembayaran.Exec", slog.Any("error", err))
+		return err
+	}
+
+	if err := updatePesanan(ctx, tx, pesanan); err != nil {
+		return err
+	}
+
+	// Update meja if pesanan.Meja is not nil (Pesanan Dine In)
+	if pesanan.Meja != nil {
+		if err := updateMeja(ctx, tx, *pesanan.Meja); err != nil {
+			return err
+		}
+	}
+
+	return tx.Commit(ctx)
 }
