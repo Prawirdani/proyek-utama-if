@@ -85,3 +85,16 @@ func (h PembayaranHandler) HandleDeleteMetodePembayaran(w http.ResponseWriter, r
 
 	return response(w, status(http.StatusOK), message("Metode pembayaran berhasil dihapus!"))
 }
+
+func (h PembayaranHandler) HandleBayarPesanan(w http.ResponseWriter, r *http.Request) error {
+	reqBody, err := BindAndValidate[model.PembayaranRequest](r)
+	if err != nil {
+		return err
+	}
+
+	if err := h.pembayaranUC.BayarPesanan(r.Context(), reqBody); err != nil {
+		return err
+	}
+
+	return response(w, status(http.StatusCreated), message("Pembayaran berhasil!"))
+}

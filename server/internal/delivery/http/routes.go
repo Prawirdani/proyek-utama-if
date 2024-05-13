@@ -61,6 +61,7 @@ func MapPembayaranRoutes(r chi.Router, h PembayaranHandler, mw middleware.Middle
 		subR.Get("/payments/methods/{metodePembayaranID}", handlerFn(h.HandleFindMetodePembayaran))
 		subR.Put("/payments/methods/{metodePembayaranID}", handlerFn(h.HandleUpdateMetodePembayaran))
 		subR.Delete("/payments/methods/{metodePembayaranID}", handlerFn(h.HandleDeleteMetodePembayaran))
+		subR.Post("/payments", handlerFn(h.HandleBayarPesanan))
 	})
 }
 

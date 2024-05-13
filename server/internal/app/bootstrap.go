@@ -14,15 +14,15 @@ func (s Server) bootstrap() {
 	userRepository := repository.NewUserRepository(s.pg, "users")
 	menuRepository := repository.NewMenuRepository(s.pg, s.cfg)
 	mejaRepository := repository.NewMejaRepository(s.pg, s.cfg)
-	pembayaranRepository := repository.NewPembayaranRepository(s.pg, s.cfg)
 	pesananRepository := repository.NewPesananRepository(s.pg, s.cfg)
+	pembayaranRepository := repository.NewPembayaranRepository(s.pg, s.cfg)
 
 	// Setup Usecases
 	authUC := usecase.NewAuthUseCase(s.cfg, userRepository)
 	menuUC := usecase.NewMenuUsecase(menuRepository, s.cfg)
 	mejaUC := usecase.NewMejaUseCase(mejaRepository, s.cfg)
-	pembayaranUC := usecase.NewPembayaranUsecase(pembayaranRepository, s.cfg)
 	pesananUC := usecase.NewPesananUseCase(s.cfg, menuRepository, mejaRepository, pesananRepository)
+	pembayaranUC := usecase.NewPembayaranUsecase(s.cfg, pembayaranRepository, pesananRepository, mejaRepository)
 
 	// Setup Handlers
 	authHandler := http.NewAuthHandler(s.cfg, authUC)
