@@ -9,9 +9,12 @@ import (
 )
 
 var (
-	ErrorMejaDuplicate     = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
-	ErrorMejaNotFound      = httputil.ErrConflict("Meja tidak ditemukan!")
-	ErrorMejaTidakTersedia = httputil.ErrConflict("Meja tidak tersedia!")
+	ErrorMejaDuplicate       = httputil.ErrConflict("Meja dengan nomor tersebut sudah ada!")
+	ErrorMejaNotFound        = httputil.ErrConflict("Meja tidak ditemukan!")
+	ErrorMejaTidakTersedia   = httputil.ErrConflict("Meja tidak tersedia!")
+	ErrorMejaAlreadyTerisi   = httputil.ErrConflict("Meja sudah terisi!")
+	ErrorMejaAlreadyReserved = httputil.ErrConflict("Meja sudah di-reserved!")
+	ErrorMejaAlreadyTersedia = httputil.ErrConflict("Meja sudah tersedia!")
 )
 
 type Meja struct {
@@ -31,6 +34,39 @@ func (m Meja) Reserved() bool {
 
 func (m Meja) Terisi() bool {
 	return m.Status == valueobject.StatusMejaTerisi
+}
+
+// Set Meja status to Terisi and also check if Meja is Tersedia
+func (m *Meja) SetTerisi() error {
+	if !m.Tersedia() {
+		return ErrorMejaTidakTersedia
+	}
+
+	if m.Terisi() {
+		return ErrorMejaAlreadyTerisi
+	}
+
+	m.Status = valueobject.StatusMejaTerisi
+	return nil
+}
+
+func (m *Meja) SetTersedia() error {
+	if m.Tersedia() {
+		return ErrorMejaAlreadyTersedia
+	}
+	m.Status = valueobject.StatusMejaTersedia
+	return nil
+}
+
+func (m *Meja) SetReserved() error {
+	if !m.Tersedia() {
+		return ErrorMejaTidakTersedia
+	}
+	if m.Reserved() {
+		return ErrorMejaAlreadyReserved
+	}
+	m.Status = valueobject.StatusMejaReserved
+	return nil
 }
 
 func (m *Meja) ScanRow(row Row) error {
