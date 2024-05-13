@@ -161,3 +161,28 @@ func (p *Pesanan) ScanRow(r Row) error {
 
 	return nil
 }
+
+func (p Pesanan) ToResponse() model.PesananResponse {
+	details := make([]model.PesananDetailResponse, len(p.Detail))
+	for i := 0; i < len(p.Detail); i++ {
+		details[i] = model.PesananDetailResponse{
+			ID:        p.Detail[i].ID,
+			NamaMenu:  p.Detail[i].Menu.Nama,
+			HargaMenu: p.Detail[i].Menu.Harga,
+			Kuantitas: p.Detail[i].Kuantitas,
+			Subtotal:  p.Detail[i].Subtotal,
+		}
+	}
+	return model.PesananResponse{
+		ID:            p.ID,
+		NamaPelanggan: p.NamaPelanggan,
+		Kasir:         p.Kasir.Nama,
+		Meja:          p.Meja.Nomor,
+		Tipe:          string(p.TipePesanan),
+		Status:        string(p.StatusPesanan),
+		Catatan:       p.Catatan,
+		Detail:        details,
+		Total:         p.Total,
+		WaktuPesanan:  p.WaktuPesanan,
+	}
+}
