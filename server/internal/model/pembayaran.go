@@ -12,3 +12,8 @@ type UpdateMetodePembayaranRequest struct {
 	Metode         string `json:"metode" validate:"required"`
 	Deskripsi      string `json:"deskripsi" validate:"required"`
 }
+
+type PembayaranRequest struct {
+	MetodePembayaranId int `json:"metodePembayaranId" validate:"required"`
+	PesananId          int `json:"pesananId" validate:"required"`
+}
