@@ -132,7 +132,7 @@ func (pr pesananRepository) Update(ctx context.Context, pesanan entity.Pesanan) 
 	}
 	defer tx.Rollback(ctx)
 
-	err = pr.update(ctx, tx, pesanan)
+	err = updatePesanan(ctx, tx, pesanan)
 	if err != nil {
 		return err
 	}
@@ -168,7 +168,7 @@ func (pr pesananRepository) DeleteDetail(ctx context.Context, pesanan entity.Pes
 	}
 	defer tx.Rollback(ctx)
 
-	err = pr.update(ctx, tx, pesanan)
+	err = updatePesanan(ctx, tx, pesanan)
 	if err != nil {
 		return err
 	}
@@ -182,7 +182,9 @@ func (pr pesananRepository) DeleteDetail(ctx context.Context, pesanan entity.Pes
 	return tx.Commit(ctx)
 }
 
-func (pr pesananRepository) update(ctx context.Context, tx pgx.Tx, pesanan entity.Pesanan) error {
+// updatePesanan is a helper function to update pesanan data
+// shared across repositories
+func updatePesanan(ctx context.Context, tx pgx.Tx, pesanan entity.Pesanan) error {
 	query := `UPDATE pesanan 
 		SET nama_pelanggan=$1, meja_id=$2, total=$3, tipe_pesanan=$4, status_pesanan=$5, catatan=$6
 	WHERE id=$7

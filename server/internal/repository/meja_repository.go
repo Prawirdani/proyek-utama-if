@@ -81,8 +81,21 @@ func (m mejaRepository) SelectWhere(ctx context.Context, field string, searchVal
 }
 
 func (m mejaRepository) Update(ctx context.Context, meja entity.Meja) error {
+	tx, err := m.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	if err := updateMeja(ctx, tx, meja); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}
+
+func updateMeja(ctx context.Context, tx pgx.Tx, meja entity.Meja) error {
 	query := "UPDATE meja SET nomor=$1, status=$2, deleted_at=$3 WHERE id=$4"
-	_, err := m.db.Exec(ctx, query, meja.Nomor, meja.Status, meja.DeletedAt, meja.ID)
+	_, err := tx.Exec(ctx, query, meja.Nomor, meja.Status, meja.DeletedAt, meja.ID)
 	if err != nil {
 		// Duplicate Unique Key error
 		if strings.Contains(err.Error(), "23505") {
