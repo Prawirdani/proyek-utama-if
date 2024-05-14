@@ -1,16 +1,57 @@
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  ReceiptText,
+  TowerControl,
+  User2,
+  Utensils,
+  Wallet2,
+  X,
+} from 'lucide-react';
 import { useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
+const sidebarItems = [
+  {
+    name: 'Dashboard',
+    icon: <LayoutDashboard />,
+    path: '/',
+  },
+  {
+    name: 'Menu',
+    icon: <Utensils />,
+    path: '/menus',
+  },
+  {
+    name: 'Meja',
+    icon: <TowerControl />,
+    path: '/tables',
+  },
+  {
+    name: 'Pembayaran',
+    icon: <Wallet2 />,
+    path: '/payments',
+  },
+  {
+    name: 'Pengguna',
+    icon: <User2 />,
+    path: '/users',
+  },
+  {
+    name: 'Laporan',
+    icon: <ReceiptText />,
+    path: '/reports',
+  },
+];
+
 export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   const sideBarRef = useRef(null);
 
-  // className={`border lg:relative left-0 top-0 z-50 h-screen lg:w-72 duration-200 ease-linear shadow-xl ${sideBarOpen ? 'w-72' : 'w-0 overflow-hidden'}`}
   return (
     <aside
       ref={sideBarRef}
@@ -20,17 +61,43 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0`}
     >
-      <div className="h-full flex flex-col p-2">
+      <div className="h-full flex flex-col p-2 mb-8">
         <Button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           variant="ghost"
-          className="lg:hidden px-2 w-fit self-end"
+          className="lg:hidden px-2 w-fit self-end mb-4"
         >
           <X />
         </Button>
 
-        <h2 className="text-center">My Sidebar</h2>
+        <div className="lg:mt-10 flex flex-col gap-y-3 p-2">
+          {sidebarItems.map((item) => (
+            <SidebarNavItem key={item.name} link={item.path} icon={item.icon}>
+              {item.name}
+            </SidebarNavItem>
+          ))}
+        </div>
       </div>
     </aside>
+  );
+}
+
+interface SidebarNavItemProps {
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  link: string;
+}
+
+function SidebarNavItem({ children, icon, link }: SidebarNavItemProps) {
+  const location = useLocation();
+  const isActive = location.pathname === link;
+  return (
+    <Link
+      to={link}
+      className={`flex justify-start w-full p-4 rounded-md text-left tracking-wide font-medium hover:bg-accent ${isActive && 'bg-accent'}`}
+    >
+      {icon}
+      <span className="ml-2">{children}</span>
+    </Link>
   );
 }
