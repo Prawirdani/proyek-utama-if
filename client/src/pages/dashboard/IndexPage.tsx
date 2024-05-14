@@ -1,7 +1,7 @@
 import TitleSetter from '@/components/pageTitle';
 import { Card } from '@/components/ui/card';
 
-export default function Index() {
+export default function IndexPage() {
   return (
     <>
       <TitleSetter title="Dashboard" />
