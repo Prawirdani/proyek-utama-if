@@ -75,7 +75,7 @@ func (h AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) error {
 func (h AuthHandler) CurrentUser(w http.ResponseWriter, r *http.Request) error {
 	tokenClaims := httputil.GetAuthCtx(r.Context())
 
-	return response(w, data(tokenClaims))
+	return response(w, data(tokenClaims["user"]))
 }
 
 func (h AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) error {
