@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { Navigate, Outlet } from 'react-router-dom';
@@ -7,10 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useAuth();
-
-  useEffect(() => {
-    console.log(sidebarOpen);
-  }, [sidebarOpen]);
 
   return user ? (
     <div className="flex min-h-screen overflow-hidden">
