@@ -105,7 +105,7 @@ function SidebarNavItem({
     <Link
       to={link}
       {...props}
-      className={`flex justify-start w-full p-4 rounded-md text-left tracking-wide font-medium hover:bg-accent ${isActive && 'bg-accent'}`}
+      className={`flex justify-start w-full p-4 rounded-md text-left tracking-wide font-medium hover:bg-accent ${isActive && 'bg-accent text-primary'}`}
     >
       {icon}
       <span className="ml-2">{children}</span>
