@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/context/useAuth';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { FieldValues, useForm } from 'react-hook-form';
@@ -18,24 +18,16 @@ import { useNavigate } from 'react-router-dom';
 export default function LoginPage() {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
-  const { identify } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm();
 
+  const { login } = useAuth();
+
   const onSubmit = async (data: FieldValues) => {
-    setApiError(null);
-    const url = '/api/v1/auth/login';
-    const res = await fetch(url, {
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify({
-        username: data.username,
-        password: data.password,
-      }),
-    });
+    const res = await login(data.username, data.password);
     if (!res.ok) {
       setApiError(
         res.status === 401
@@ -44,8 +36,7 @@ export default function LoginPage() {
       );
       return;
     }
-    await identify();
-    navigate('/');
+    navigate('/', { replace: true });
   };
   return (
     <>
@@ -79,7 +70,7 @@ export default function LoginPage() {
                 </div>
               </div>
               {apiError && (
-                <div className="text-destructive text-sm ">{apiError}</div>
+                <div className="text-destructive text-sm mt-2">{apiError}</div>
               )}
             </CardContent>
             <CardFooter>

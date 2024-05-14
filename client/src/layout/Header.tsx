@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/useAuth';
 import { Menu } from 'lucide-react';
 
 interface HeaderProps {
@@ -7,11 +8,13 @@ interface HeaderProps {
 }
 
 export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
+  const { user } = useAuth();
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
   return (
-    <header className="border-b shadow-sm top-0 sticky bg-white z-40 p-4 flex justify-between lg:justify-end  items-center">
+    <header className="border-b shadow-sm top-0 sticky bg-white z-40 p-2 lg:p-4 flex justify-between lg:justify-end  items-center">
       <Button
         id="sidebar-toggle"
         aria-controls="sidebar"
@@ -23,7 +26,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
         <Menu />
       </Button>
       <div>
-        <h1 className="text-center">My Header</h1>
+        <p>{user.nama}</p>
       </div>
     </header>
   );

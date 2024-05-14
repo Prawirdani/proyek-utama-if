@@ -2,11 +2,11 @@ import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import Dashboard from './layout/Dashboard';
 import LoginPage from './pages/LoginPage';
-import AuthProvider from './providers/authProvider';
-import { useAuth } from './hooks/useAuth';
+import AuthProvider from './context/authProvider';
 import { useEffect, useState } from 'react';
 import Loader from '@/components/ui/loader';
 import Index from './pages/dashboard/Index';
+import { useAuth } from './context/useAuth';
 
 export default function App() {
   const router = createBrowserRouter([
