@@ -6,6 +6,7 @@ import AuthProvider from './providers/authProvider';
 import { useAuth } from './hooks/useAuth';
 import { useEffect, useState } from 'react';
 import Loader from '@/components/ui/loader';
+import Index from './pages/dashboard/Index';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -15,6 +16,12 @@ export default function App() {
         {
           path: '/',
           element: <Dashboard />,
+          children: [
+            {
+              path: '/',
+              element: <Index />,
+            },
+          ],
         },
       ],
     },
