@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/prawirdani/golang-restapi/internal/middleware"
@@ -62,6 +63,21 @@ func MapPembayaranRoutes(r chi.Router, h PembayaranHandler, mw middleware.Middle
 		subR.Put("/payments/methods/{metodePembayaranID}", handlerFn(h.HandleUpdateMetodePembayaran))
 		subR.Delete("/payments/methods/{metodePembayaranID}", handlerFn(h.HandleDeleteMetodePembayaran))
 		subR.Post("/payments", handlerFn(h.HandleBayarPesanan))
+	})
+}
+
+func RegisterClientApp(r chi.Router) {
+	fs := http.FileServer(http.Dir("../client/dist"))
+	r.With(clientSideRouting).Get("/*", http.StripPrefix("/", fs).ServeHTTP)
+}
+
+func clientSideRouting(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.IndexByte(r.URL.Path, '.') == -1 {
+			http.ServeFile(w, r, "../client/dist/index.html")
+			return
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 

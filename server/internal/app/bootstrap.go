@@ -33,6 +33,8 @@ func (s Server) bootstrap() {
 
 	middlewares := middleware.NewMiddlewareManager(s.cfg)
 
+	http.RegisterClientApp(s.router)
+
 	s.router.Route("/api", func(r chi.Router) {
 		http.ImagesFS(r)
 	})
