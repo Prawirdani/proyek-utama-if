@@ -1,9 +1,9 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 
 export default function UserPage() {
   return (
     <>
-      <PageTitle title="Pengguna" />
+      <TitleSetter title="Pengguna" />
       <p>This Is Pengguna Page</p>
     </>
   );

@@ -1,10 +1,10 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 import { Card } from '@/components/ui/card';
 
 export default function Index() {
   return (
     <>
-      <PageTitle title="Dashboard" />
+      <TitleSetter title="Dashboard" />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
         {Array.from({ length: 4 }, (_, index) => (
           <OverviewCard key={index} />

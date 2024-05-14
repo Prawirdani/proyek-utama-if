@@ -1,4 +1,4 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -40,7 +40,7 @@ export default function LoginPage() {
   };
   return (
     <>
-      <PageTitle title="Login" />
+      <TitleSetter title="Login" />
       <div className="h-screen flex place-items-center bg-secondary overflow-hidden">
         <Card className="mx-auto w-[calc(100%-5%)] sm:w-[400px] space-y-4 shadow-lg">
           <form autoComplete="on" onSubmit={handleSubmit(onSubmit)}>

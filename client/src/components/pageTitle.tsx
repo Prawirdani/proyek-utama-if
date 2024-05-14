@@ -5,7 +5,7 @@ interface PageTitleProps {
   title: string;
 }
 
-const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
+const TitleSetter: React.FC<PageTitleProps> = ({ title }) => {
   const location = useLocation();
 
   useEffect(() => {
@@ -15,4 +15,4 @@ const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
   return null; // This component doesn't render anything
 };
 
-export default PageTitle;
+export default TitleSetter;

@@ -1,9 +1,9 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 
 export default function ReportPage() {
   return (
     <>
-      <PageTitle title="Laporan" />
+      <TitleSetter title="Laporan" />
       <p>This Is Laporan Page</p>
     </>
   );

@@ -1,9 +1,9 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 
 export default function TablePage() {
   return (
     <>
-      <PageTitle title="Meja" />
+      <TitleSetter title="Meja" />
       <p>This Is Meja Page</p>
     </>
   );

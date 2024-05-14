@@ -1,9 +1,9 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 
 export default function MenuPage() {
   return (
     <>
-      <PageTitle title="Menu" />
+      <TitleSetter title="Menu" />
       <p>This Is Menu Page</p>
     </>
   );

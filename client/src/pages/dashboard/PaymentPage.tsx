@@ -1,9 +1,9 @@
-import PageTitle from '@/components/pageTitle';
+import TitleSetter from '@/components/pageTitle';
 
 export default function PaymentPage() {
   return (
     <>
-      <PageTitle title="Pembayaran" />
+      <TitleSetter title="Pembayaran" />
       <p>This Is Pembayaran Page</p>
     </>
   );
