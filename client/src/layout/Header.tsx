@@ -11,14 +11,14 @@ export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
     setSidebarOpen(!sidebarOpen);
   };
   return (
-    <header className="border-b shadow-sm top-0 sticky z-999 p-4 flex justify-between md:justify-end  items-center">
+    <header className="border-b shadow-sm top-0 sticky bg-white z-40 p-4 flex justify-between lg:justify-end  items-center">
       <Button
         id="sidebar-toggle"
         aria-controls="sidebar"
         aria-expanded={sidebarOpen}
         onClick={toggleSidebar}
         variant="ghost"
-        className="md:hidden p-2 h-auto w-auto rounded-md"
+        className="lg:hidden p-2 h-auto w-auto rounded-md"
       >
         <Menu />
       </Button>
