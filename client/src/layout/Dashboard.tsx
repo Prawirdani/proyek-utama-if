@@ -19,7 +19,7 @@ export default function Dashboard() {
         <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         {/* Header component */}
         {/* Main content */}
-        <main className="bg-secondary h-full p-4">
+        <main className="bg-secondary h-full p-8">
           <Outlet />
         </main>
         {/* Main content */}
