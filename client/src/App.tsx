@@ -7,6 +7,11 @@ import { useEffect, useState } from 'react';
 import Loader from '@/components/ui/loader';
 import Index from './pages/dashboard/Index';
 import { useAuth } from './context/useAuth';
+import MenuPage from './pages/dashboard/MenuPage';
+import TablePage from './pages/dashboard/TablePage';
+import PaymentPage from './pages/dashboard/PaymentPage';
+import ReportPage from './pages/dashboard/ReportPage';
+import UserPage from './pages/dashboard/UserPage';
 
 export default function App() {
   const router = createBrowserRouter([
@@ -20,6 +25,26 @@ export default function App() {
             {
               path: '/',
               element: <Index />,
+            },
+            {
+              path: '/menus',
+              element: <MenuPage />,
+            },
+            {
+              path: '/tables',
+              element: <TablePage />,
+            },
+            {
+              path: '/payments',
+              element: <PaymentPage />,
+            },
+            {
+              path: '/users',
+              element: <UserPage />,
+            },
+            {
+              path: '/reports',
+              element: <ReportPage />,
             },
           ],
         },
