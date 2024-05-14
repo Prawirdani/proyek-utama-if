@@ -16,7 +16,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
       ref={sideBarRef}
       id="sidebar"
       aria-labelledby="sidebar-toggle"
-      className={`border fixed lg:relative top-0 z-50 h-screen w-72 duration-200 ease-linear shadow-xl transform bg-white ${
+      className={`border-r fixed lg:relative top-0 z-50 h-screen w-72 duration-200 ease-linear shadow-xl transform bg-white ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0`}
     >

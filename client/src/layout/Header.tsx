@@ -1,6 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/useAuth';
-import { Menu } from 'lucide-react';
+import { ChevronDown, LogOut, Menu } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -8,9 +15,16 @@ interface HeaderProps {
 }
 
 export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleLogout = async () => {
+    await logout().finally(() => {
+      navigate('/login', { replace: true });
+    });
   };
 
   return (
@@ -25,9 +39,29 @@ export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
       >
         <Menu />
       </Button>
-      <div>
-        <p>{user.nama}</p>
+      <div className="flex items-center gap-2">
+        <div className="-space-y-1 [&>p]:text-sm">
+          <p className="font-medium tracking-wide">{user.nama}</p>
+          <p className="text-end">{user.role}</p>
+        </div>
+        <Dropdown handleLogout={handleLogout} />
       </div>
     </header>
+  );
+}
+
+function Dropdown({ handleLogout }: { handleLogout: () => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <ChevronDown className="h-5 w-5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="mt-3">
+        <DropdownMenuItem className="space-x-2" onClick={handleLogout}>
+          <LogOut />
+          <span>Logout</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
