@@ -72,7 +72,12 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
         <div className="lg:mt-10 flex flex-col gap-y-3 p-2">
           {sidebarItems.map((item) => (
-            <SidebarNavItem key={item.name} link={item.path} icon={item.icon}>
+            <SidebarNavItem
+              key={item.name}
+              link={item.path}
+              icon={item.icon}
+              onClick={() => setSidebarOpen(false)}
+            >
               {item.name}
             </SidebarNavItem>
           ))}
@@ -82,18 +87,24 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
   );
 }
 
-interface SidebarNavItemProps {
+interface SidebarNavItemProps extends React.HTMLAttributes<HTMLAnchorElement> {
   children: React.ReactNode;
   icon: React.ReactNode;
   link: string;
 }
 
-function SidebarNavItem({ children, icon, link }: SidebarNavItemProps) {
+function SidebarNavItem({
+  children,
+  icon,
+  link,
+  ...props
+}: SidebarNavItemProps) {
   const location = useLocation();
   const isActive = location.pathname === link;
   return (
     <Link
       to={link}
+      {...props}
       className={`flex justify-start w-full p-4 rounded-md text-left tracking-wide font-medium hover:bg-accent ${isActive && 'bg-accent'}`}
     >
       {icon}
