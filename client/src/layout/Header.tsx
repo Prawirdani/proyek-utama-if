@@ -28,7 +28,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }: HeaderProps) {
   };
 
   return (
-    <header className="border-b shadow-sm fixed top-0 left-0 right-0 bg-white z-40 p-2 lg:p-4 flex justify-between lg:justify-end items-center">
+    <header className="border-b shadow-sm fixed top-0 left-0 right-0 bg-primary-foreground z-40 p-2 lg:p-4 flex justify-between lg:justify-end items-center">
       <Button
         id="sidebar-toggle"
         aria-controls="sidebar"
