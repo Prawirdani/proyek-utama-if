@@ -14,6 +14,7 @@ func UploadHandler(r *http.Request, formName string) (*string, error) {
 	file, handler, err := r.FormFile(formName)
 
 	if err != nil {
+		slog.Error("UploadHandler.FormFile", slog.String("details", err.Error()))
 		return nil, err
 	}
 	defer file.Close()

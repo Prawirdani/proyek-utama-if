@@ -49,6 +49,11 @@ func (h MenuHandler) HandleCreateMenu(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
+	_, _, err = r.FormFile("image")
+	if err != nil {
+		return err
+	}
+
 	imageName, err := httputil.UploadHandler(r, "image")
 	if err != nil {
 		return err
