@@ -11,10 +11,10 @@ module.exports = {
         '2xl': '1400px',
       },
     },
-    screens: {
-      xs: '480px',
-    },
     extend: {
+      screens: {
+        xs: '480px',
+      },
       aspectRatio: {
         '16/9': '16 / 9',
       },
