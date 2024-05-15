@@ -87,7 +87,7 @@ function SidebarNavItem({ children, icon, link, ...props }: SidebarNavItemProps)
     <Link
       to={link}
       {...props}
-      className={`flex justify-start w-full p-4 rounded-md text-left tracking-wide hover:bg-accent transition-colors duration-500 ${isActive && 'bg-accent text-primary'}`}
+      className={`flex justify-start  w-full p-4 rounded-md text-left tracking-wide hover:bg-muted transition-colors duration-300 ${isActive && 'bg-muted text-primary'}`}
     >
       {icon}
       <p className="ml-2 font-medium">{children}</p>
