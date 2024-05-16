@@ -18,6 +18,24 @@ declare global {
     username: string;
     role: UserRole;
   };
+
+  type Kategori = {
+    id: number;
+    nama: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+
+  type Menu = {
+    id: number;
+    nama: string;
+    deskripsi: string;
+    harga: number;
+    kategori: Kategori;
+    url: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
 }
 
 export {};
