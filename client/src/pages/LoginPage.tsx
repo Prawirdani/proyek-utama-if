@@ -53,9 +53,9 @@ export default function LoginPage() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel htmlFor="username">Username</FormLabel>
                       <FormControl>
-                        <Input autoComplete="on" placeholder="Masukkan username anda" {...field} />
+                        <Input autoComplete="on" id="username" placeholder="Masukkan username anda" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -66,9 +66,15 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel htmlFor="password">Password</FormLabel>
                       <FormControl>
-                        <Input autoComplete="on" type="password" placeholder="Masukkan password anda" {...field} />
+                        <Input
+                          autoComplete="on"
+                          id="password"
+                          type="password"
+                          placeholder="Masukkan password anda"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
