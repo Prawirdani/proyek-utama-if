@@ -36,6 +36,19 @@ declare global {
     createdAt: Date;
     updatedAt: Date;
   };
+
+  type StatusMeja = 'Kosong' | 'Tersedia';
+  type Meja = {
+    id: number;
+    nomor: string;
+    status: StatusMeja;
+  };
+
+  type ErrorResponse = {
+    code: number;
+    message: string;
+    details?: Record<string, string>;
+  };
 }
 
 export {};
