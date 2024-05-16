@@ -2,7 +2,13 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"log/slog"
 	"net/http"
+	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/model"
@@ -49,21 +55,38 @@ func (h MenuHandler) HandleCreateMenu(w http.ResponseWriter, r *http.Request) er
 		return err
 	}
 
-	_, _, err = r.FormFile("image")
+	file, handler, err := r.FormFile("image")
+
 	if err != nil {
+		slog.Error("UploadHandler.FormFile", slog.String("details", err.Error()))
+		return err
+	}
+	defer file.Close()
+
+	extension := filepath.Ext(handler.Filename)
+	newFileName := fmt.Sprintf("%d%s", time.Now().UnixNano(), extension)
+	// Create a new file in the server's upload directory
+	// /project/uploads
+	f, err := os.OpenFile(filepath.Join("uploads", newFileName), os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		slog.Error("UploadHandler.OpenFile", slog.String("details", err.Error()))
+		return err
+	}
+	defer f.Close()
+
+	// Copy the file to the destination path
+	_, err = io.Copy(f, file)
+	if err != nil {
+		slog.Error("UploadHandler.Copy", slog.String("details:", err.Error()))
 		return err
 	}
 
-	imageName, err := httputil.UploadHandler(r, "image")
-	if err != nil {
-		return err
-	}
-
-	menuData.ImageName = imageName
+	menuData.ImageName = &newFileName
 	if err := h.menuUC.CreateMenu(r.Context(), menuData); err != nil {
-		httputil.DeleteUpload(*imageName)
+		httputil.DeleteUpload(*menuData.ImageName)
 		return err
 	}
+
 	return response(w, status(http.StatusCreated), message("Menu berhasil dibuat!."))
 }
 

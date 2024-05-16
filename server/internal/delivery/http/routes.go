@@ -28,7 +28,7 @@ func MapMenuRoutes(r chi.Router, h MenuHandler, mw middleware.MiddlewareManager)
 		subR.Get("/menus", handlerFn(h.HandleListMenu))
 		subR.Get("/menus/{menuID}", handlerFn(h.HandleFindMenu))
 		subR.Post("/menus", handlerFn(h.HandleCreateMenu))
-		subR.Put("/menus/{menuID}", handlerFn(h.HandleUpdateMenu))
+		subR.Post("/menus/{menuID}", handlerFn(h.HandleUpdateMenu))
 		subR.Delete("/menus/{menuID}", handlerFn(h.HandleDeleteMenu))
 	})
 }
