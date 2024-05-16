@@ -144,12 +144,12 @@ export default function AddMenuDialog({ setMenus, kategories }: AddMenuDialogPro
                     <FormItem>
                       <FormLabel htmlFor="kategori_id">Kategori Menu</FormLabel>
                       <Select onValueChange={field.onChange} name={field.name}>
-                        <FormControl>
+                        <FormControl id="kategori_id">
                           <SelectTrigger>
                             <SelectValue placeholder="Pilih Kategori" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent id="kategori_id">
+                        <SelectContent>
                           {kategories.map((kategori) => (
                             <SelectItem key={kategori.id} value={String(kategori.id)}>
                               {kategori.nama}
