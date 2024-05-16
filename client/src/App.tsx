@@ -71,5 +71,11 @@ const PersistLogin = () => {
     identifyUser();
   }, []);
 
-  return isLoading ? <Loader /> : <Outlet />;
+  return isLoading ? (
+    <div className="h-screen">
+      <Loader />
+    </div>
+  ) : (
+    <Outlet />
+  );
 };
