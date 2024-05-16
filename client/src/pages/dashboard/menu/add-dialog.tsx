@@ -57,7 +57,6 @@ export default function AddMenuDialog({ setMenus, kategories }: AddMenuDialogPro
   }, [open]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log(data);
     const formData = new FormData();
     formData.append(
       'data',
