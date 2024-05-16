@@ -1,10 +1,10 @@
-import TitleSetter from '@/components/pageTitle';
+import PaymentMethodsProvider from '@/context/PaymentMethodsProvider';
+import Page from './payment/Page';
 
 export default function PaymentPage() {
   return (
-    <>
-      <TitleSetter title="Pembayaran" />
-      <p>This Is Pembayaran Page</p>
-    </>
+    <PaymentMethodsProvider>
+      <Page />
+    </PaymentMethodsProvider>
   );
 }

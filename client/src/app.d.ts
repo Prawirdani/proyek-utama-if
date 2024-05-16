@@ -6,9 +6,11 @@ declare global {
   };
 
   type ErrorResponse = {
-    code: number;
-    message: string;
-    details?: Record<string, string>;
+    error: {
+      code: number;
+      message: string;
+      details?: Record<string, string>;
+    };
   };
 
   type UserRole = 'Manajer' | 'Kasir';
@@ -53,6 +55,14 @@ declare global {
     id: number;
     nomor: string;
     status: StatusMeja;
+  };
+
+  type TipePembayaran = 'TUNAI' | 'CARD' | 'MOBILE';
+  type MetodePembayaran = {
+    id: number;
+    tipePembayaran: TipePembayaran;
+    metode: string;
+    deskripsi: string;
   };
 }
 
