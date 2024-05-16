@@ -1,7 +1,7 @@
 import { toast } from '@/components/ui/use-toast';
 
-export function Fetch(fn: Function, toastSuccessMessage?: string) {
-  return async (...args: any[]) => {
+export function Fetch<T>(fn: (...args: any[]) => Promise<T>, toastSuccessMessage?: string) {
+  return async (...args: any[]): Promise<T> => {
     try {
       const result = await fn(...args);
       if (toastSuccessMessage) {
@@ -10,6 +10,7 @@ export function Fetch(fn: Function, toastSuccessMessage?: string) {
       return result;
     } catch (error) {
       toast({ description: (error as Error).message, variant: 'destructive' });
+      throw error; // Rethrow the error to maintain the original behavior
     }
   };
 }
