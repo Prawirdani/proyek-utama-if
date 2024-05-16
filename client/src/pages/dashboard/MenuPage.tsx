@@ -18,7 +18,7 @@ export default function MenuPage() {
     })()
       .then(({ menusData, kategoriesData }) => {
         setMenus(menusData);
-        setKategories(kategoriesData);
+        setKategories(kategoriesData!);
       })
       .finally(() => {
         setLoading(false);

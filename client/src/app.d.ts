@@ -1,5 +1,16 @@
 // app.d.ts
 declare global {
+  type ApiResponse<T> = {
+    data: T | null;
+    message?: string;
+  };
+
+  type ErrorResponse = {
+    code: number;
+    message: string;
+    details?: Record<string, string>;
+  };
+
   type UserRole = 'Manajer' | 'Kasir';
   type User = {
     id: number;
@@ -42,12 +53,6 @@ declare global {
     id: number;
     nomor: string;
     status: StatusMeja;
-  };
-
-  type ErrorResponse = {
-    code: number;
-    message: string;
-    details?: Record<string, string>;
   };
 }
 
