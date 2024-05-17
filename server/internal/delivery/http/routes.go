@@ -66,6 +66,16 @@ func MapPembayaranRoutes(r chi.Router, h PembayaranHandler, mw middleware.Middle
 	})
 }
 
+func MapUserRoutes(r chi.Router, h UserHandler, mw middleware.MiddlewareManager) {
+	r.With(mw.Authenticate).Group(func(subR chi.Router) {
+		subR.Get("/users", handlerFn(h.HandleListUser))
+		subR.Put("/users/{userID}", handlerFn(h.HandleUpdateUser))
+		subR.Put("/users/{userID}/activate", handlerFn(h.HandleActivateUser))
+		subR.Delete("/users/{userID}/deactivate", handlerFn(h.HandleDeactivateUser))
+		subR.Put("/users/{userID}/reset-password", handlerFn(h.HandleDeactivateUser))
+	})
+}
+
 func RegisterClientApp(r chi.Router) {
 	fs := http.FileServer(http.Dir("../client/dist"))
 	r.With(clientSideRouting).Get("/*", http.StripPrefix("/", fs).ServeHTTP)

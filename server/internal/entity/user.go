@@ -78,3 +78,33 @@ func (u User) GenerateToken(secret string, expiryHour int) (string, error) {
 
 	return utils.GenerateToken(payload, secret, time.Duration(expiryHour)*time.Hour)
 }
+
+func (u *User) AssignUpdate(request model.UserUpdateRequest) {
+	u.Nama = request.Nama
+	u.Username = request.Username
+}
+
+func (u *User) NewPassword(password string) *User {
+	u.Password = password
+	return u
+}
+
+func (u *User) Deactivate() {
+	u.Active = false
+}
+
+func (u *User) Activate() {
+	u.Active = true
+}
+
+func (u User) ToResponse() model.UserResponse {
+	return model.UserResponse{
+		ID:        u.ID,
+		Nama:      u.Nama,
+		Username:  u.Username,
+		Active:    u.Active,
+		Role:      string(u.Role),
+		CreatedAt: *u.CreatedAt,
+		UpdatedAt: *u.UpdatedAt,
+	}
+}
