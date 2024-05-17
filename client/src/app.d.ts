@@ -64,6 +64,16 @@ declare global {
     metode: string;
     deskripsi: string;
   };
+
+  type User = {
+    id: number;
+    nama: string;
+    username: string;
+    active: boolean;
+    role: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
 }
 
 export {};

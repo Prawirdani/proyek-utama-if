@@ -1,10 +1,10 @@
-import TitleSetter from '@/components/pageTitle';
+import UsersProvider from '@/context/UserProvider';
+import Page from './user/Page';
 
 export default function UserPage() {
   return (
-    <>
-      <TitleSetter title="Pengguna" />
-      <p>This Is Pengguna Page</p>
-    </>
+    <UsersProvider>
+      <Page />
+    </UsersProvider>
   );
 }
