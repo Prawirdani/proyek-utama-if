@@ -26,7 +26,7 @@ type PesananResponse struct {
 	ID            int                     `json:"id"`
 	NamaPelanggan string                  `json:"namaPelanggan"`
 	Kasir         string                  `json:"kasir"`
-	Meja          string                  `json:"meja"`
+	Meja          interface{}             `json:"meja"`
 	Tipe          string                  `json:"tipe"`
 	Status        string                  `json:"status"`
 	Catatan       *string                 `json:"catatan"`

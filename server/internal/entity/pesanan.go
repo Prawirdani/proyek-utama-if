@@ -177,7 +177,7 @@ func (p Pesanan) ToResponse() model.PesananResponse {
 		ID:            p.ID,
 		NamaPelanggan: p.NamaPelanggan,
 		Kasir:         p.Kasir.Nama,
-		Meja:          p.Meja.Nomor,
+		Meja:          p.Meja,
 		Tipe:          string(p.TipePesanan),
 		Status:        string(p.StatusPesanan),
 		Catatan:       p.Catatan,
