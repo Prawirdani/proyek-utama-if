@@ -44,7 +44,7 @@ func (m mejaRepository) Insert(ctx context.Context, meja entity.Meja) error {
 }
 
 func (m mejaRepository) Select(ctx context.Context) ([]entity.Meja, error) {
-	query := "SELECT id, nomor, status, deleted_at FROM meja WHERE deleted_at IS NULL"
+	query := "SELECT id, nomor, status, deleted_at FROM meja WHERE deleted_at IS NULL ORDER BY nomor ASC"
 	rows, err := m.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
