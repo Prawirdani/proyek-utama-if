@@ -118,7 +118,6 @@ func (h MenuHandler) HandleFindMenu(w http.ResponseWriter, r *http.Request) erro
 	if err != nil {
 		return err
 	}
-	menu.FormatURL(h.cfg)
 
 	return response(w, data(menu))
 }

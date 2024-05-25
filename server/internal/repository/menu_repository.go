@@ -138,7 +138,6 @@ func (r menuRepository) Select(ctx context.Context) ([]entity.Menu, error) {
 		if err := m.ScanRow(rows); err != nil {
 			return nil, err
 		}
-		m.FormatURL(r.cfg)
 		menus = append(menus, m)
 	}
 	return menus, nil

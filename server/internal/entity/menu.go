@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/model"
 	"github.com/prawirdani/golang-restapi/pkg/httputil"
 )
@@ -102,21 +101,6 @@ func (m *Menu) Assign(request model.UpdateMenuRequest) {
 func (m *Menu) SetDeletedAt() {
 	t := time.Now()
 	m.DeletedAt = &t
-}
-
-// Concate image filename with host
-func (m *Menu) FormatURL(cfg *config.Config) {
-	if m.Url != nil {
-		var host string
-		if !cfg.IsProduction() {
-			host = fmt.Sprintf("http://localhost:%v", cfg.App.Port)
-		} else {
-			host = fmt.Sprintf("https://%s", cfg.App.DNS)
-		}
-
-		url := fmt.Sprintf("%s/api/images/%s", host, *m.Url)
-		m.Url = &url
-	}
 }
 
 func (m *Menu) DeleteImage() error {
