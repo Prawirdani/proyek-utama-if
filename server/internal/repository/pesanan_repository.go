@@ -9,12 +9,15 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prawirdani/golang-restapi/config"
 	"github.com/prawirdani/golang-restapi/internal/entity"
+	"github.com/prawirdani/golang-restapi/internal/model"
 )
 
 type PesananRepository interface {
 	Insert(ctx context.Context, p entity.Pesanan) error
 	Select(ctx context.Context) ([]entity.Pesanan, error)
 	SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Pesanan, error)
+	// Complex Search With Query Params
+	SelectQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error)
 	Update(ctx context.Context, pesanan entity.Pesanan) error
 	DeleteDetail(ctx context.Context, pesanan entity.Pesanan, detailID int) error
 }
@@ -29,6 +32,26 @@ func NewPesananRepository(db *pgxpool.Pool, cfg *config.Config) pesananRepositor
 		db:  db,
 		cfg: cfg,
 	}
+}
+
+func (pr pesananRepository) SelectQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error) {
+	var pesanan entity.Pesanan
+	baseQuery := querySelectPesanan
+	queryStr := query.Build(baseQuery)
+
+	row := pr.db.QueryRow(ctx, queryStr, query.StmtArgs...)
+	err := pesanan.ScanRow(row)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, entity.ErrorPesananNotFound
+		}
+		return nil, err
+	}
+
+	details, err := pr.queryPesananDetails(ctx, pesanan.ID)
+	pesanan.Detail = append(pesanan.Detail, details...)
+
+	return &pesanan, nil
 }
 
 func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) error {

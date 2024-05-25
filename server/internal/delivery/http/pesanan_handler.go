@@ -127,3 +127,18 @@ func (ph PesananHandler) HandleBatalkanPesanan(w http.ResponseWriter, r *http.Re
 
 	return response(w, status(http.StatusOK), message("Pesanan berhasil dibatalkan"))
 }
+
+func (ph PesananHandler) HandlePesananWithQuery(w http.ResponseWriter, r *http.Request) error {
+	query, err := model.ParsePesananQuery(r)
+	if err != nil {
+		return err
+	}
+
+	ps, err := ph.pesananUC.FindPesananWithQuery(r.Context(), query)
+	if err != nil {
+		return err
+	}
+	res := ps.ToResponse()
+
+	return response(w, status(http.StatusOK), data(res))
+}

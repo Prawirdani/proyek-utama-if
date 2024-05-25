@@ -52,6 +52,7 @@ func MapPesananRoutes(r chi.Router, h PesananHandler, mw middleware.MiddlewareMa
 		subR.Put("/orders/{pesananID}/cancel", handlerFn(h.HandleBatalkanPesanan))
 		subR.Put("/orders/{pesananID}/add-menu", handlerFn(h.HandleAddMenu))
 		subR.Delete("/orders/{pesananID}/{detailID}", handlerFn(h.HandleRemoveMenu))
+		subR.Get("/orders/search", handlerFn(h.HandlePesananWithQuery))
 	})
 }
 
