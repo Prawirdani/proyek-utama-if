@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrorWrongCredentials = httputil.ErrUnauthorized("Check your credentials")
+	ErrorWrongCredentials = httputil.ErrUnauthorized("Username atau password salah!")
 )
 
 type UserRole string
