@@ -10,7 +10,7 @@ export default function MenuCard({ menu }: MenuCardProps) {
       <div className="space-y-1">
         {/* Image */}
         <div className="pt-2 px-2">
-          <img className="rounded-t-lg object-cover aspect-16/9" src={`${menu.url}`} alt="" />
+          <img className="rounded-t-lg object-cover aspect-16/9" src={`/api/images/${menu.url}`} alt="" />
         </div>
         {/* Image */}
         {/* Content */}
