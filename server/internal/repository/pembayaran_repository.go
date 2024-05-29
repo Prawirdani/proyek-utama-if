@@ -17,7 +17,7 @@ type PembayaranRepository interface {
 	SelectMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error)
 	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error
-	InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) error
+	InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Invoice, error)
 }
 
 type pembayaranRepository struct {
@@ -25,8 +25,8 @@ type pembayaranRepository struct {
 	cfg *config.Config
 }
 
-func NewPembayaranRepository(db *pgxpool.Pool, cfg *config.Config) PembayaranRepository {
-	return &pembayaranRepository{
+func NewPembayaranRepository(db *pgxpool.Pool, cfg *config.Config) pembayaranRepository {
+	return pembayaranRepository{
 		db:  db,
 		cfg: cfg,
 	}
@@ -100,31 +100,56 @@ func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp ent
 	return nil
 }
 
-func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) error {
+func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Invoice, error) {
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		slog.Error("PesananRepository.CreatePembayaran.Begin", slog.Any("error", err))
-		return err
+		return nil, err
 	}
 	defer tx.Rollback(ctx)
 
-	query := "INSERT INTO pembayaran (pesanan_id, metode_pembayaran_id, jumlah, waktu_pembayaran) VALUES ($1, $2, $3, $4)"
-	_, err = tx.Exec(ctx, query, pesanan.ID, pembayaran.Metode.ID, pembayaran.Jumlah, pembayaran.WaktuPembayaran)
-	if err != nil {
+	query := `
+	WITH inserted AS (
+		INSERT INTO pembayaran (pesanan_id, metode_pembayaran_id, jumlah, waktu_pembayaran)
+	    VALUES ($1, $2, $3, $4)
+	    RETURNING id, pesanan_id, metode_pembayaran_id, jumlah, waktu_pembayaran
+	)
+	SELECT 
+		i.id, i.jumlah, i.waktu_pembayaran,
+	    mp.id, mp.tipe_pembayaran, mp.metode, mp.deskripsi
+	FROM inserted AS i
+	JOIN metode_pembayaran AS mp ON i.metode_pembayaran_id = mp.id
+	`
+	var p entity.Pembayaran
+	if err := tx.QueryRow(ctx, query, pesanan.ID, pembayaran.Metode.ID, pembayaran.Jumlah, pembayaran.WaktuPembayaran).Scan(
+		&p.Id,
+		&p.Jumlah,
+		&p.WaktuPembayaran,
+		&p.Metode.ID,
+		&p.Metode.TipePembayaran,
+		&p.Metode.Metode,
+		&p.Metode.Deskripsi,
+	); err != nil {
 		slog.Error("PesananRepository.CreatePembayaran.Exec", slog.Any("error", err))
-		return err
+		return nil, err
 	}
 
 	if err := updatePesanan(ctx, tx, pesanan); err != nil {
-		return err
+		return nil, err
 	}
 
 	// Update meja if Pesanan Dine In
 	if pesanan.IsDineIn() {
 		if err := updateMeja(ctx, tx, *pesanan.Meja); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	invoice := entity.NewInvoice(pesanan, p)
+
+	return invoice, nil
 }

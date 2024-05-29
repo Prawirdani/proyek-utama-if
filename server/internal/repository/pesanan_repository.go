@@ -113,7 +113,18 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) (*int,
 func (pr pesananRepository) Select(ctx context.Context) ([]entity.Pesanan, error) {
 	var ps []entity.Pesanan
 
-	rows, err := pr.db.Query(ctx, querySelectPesanan)
+	orderClause := `
+	ORDER BY
+    CASE
+        WHEN status_pesanan = 'Diproses' THEN 1
+        WHEN status_pesanan = 'Disajikan' THEN 2
+        WHEN status_pesanan = 'Selesai' THEN 3
+        ELSE 4
+    END,
+    p.id;
+    `
+	query := fmt.Sprintf("%s %s", querySelectPesanan, orderClause)
+	rows, err := pr.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -226,11 +237,11 @@ func (pr pesananRepository) DeleteDetail(ctx context.Context, pesanan entity.Pes
 // shared across repositories
 func updatePesanan(ctx context.Context, tx pgx.Tx, pesanan entity.Pesanan) error {
 	query := `UPDATE pesanan 
-		SET nama_pelanggan=$1, meja_id=$2, total=$3, tipe_pesanan=$4, status_pesanan=$5, catatan=$6
-	WHERE id=$7
+		SET nama_pelanggan=$1, total=$2, tipe_pesanan=$3, status_pesanan=$4, catatan=$5
+	WHERE id=$6
 	`
 	_, err := tx.Exec(ctx, query,
-		pesanan.NamaPelanggan, pesanan.Meja.ID, pesanan.Total, pesanan.TipePesanan, pesanan.StatusPesanan, pesanan.Catatan, pesanan.ID,
+		pesanan.NamaPelanggan, pesanan.Total, pesanan.TipePesanan, pesanan.StatusPesanan, pesanan.Catatan, pesanan.ID,
 	)
 	return err
 }
@@ -292,28 +303,3 @@ var (
 	WHERE dp.pesanan_id=$1
 	`
 )
-
-// SELECT
-//     p.id,
-//     p.nama_pelanggan,
-//     p.total,
-//     p.tipe_pesanan,
-//     p.status_pesanan,
-//     p.catatan,
-//     p.waktu_pesanan,
-//     k.nama AS kasir_nama,
-//     mj.id AS meja_id,
-//     mj.nomor AS meja_nomor,
-//     dp.id AS detail_id,
-//     dp.harga,
-//     dp.kuantitas,
-//     dp.subtotal,
-//     m.nama AS menu_nama,
-//     km.nama AS kategori_menu_nama
-// FROM pesanan AS p
-// JOIN users AS k ON p.kasir_id = k.id
-// LEFT JOIN meja AS mj ON p.meja_id = mj.id
-// LEFT JOIN detail_pesanan AS dp ON p.id = dp.pesanan_id
-// LEFT JOIN menus AS m ON dp.menu_id = m.id
-// LEFT JOIN kategori_menu AS km ON m.kategori_id = km.id;
-//

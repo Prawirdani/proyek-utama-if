@@ -92,9 +92,10 @@ func (h PembayaranHandler) HandleBayarPesanan(w http.ResponseWriter, r *http.Req
 		return err
 	}
 
-	if err := h.pembayaranUC.BayarPesanan(r.Context(), reqBody); err != nil {
+	invoice, err := h.pembayaranUC.BayarPesanan(r.Context(), reqBody)
+	if err != nil {
 		return err
 	}
 
-	return response(w, status(http.StatusCreated), message("Pembayaran berhasil!"))
+	return response(w, status(http.StatusCreated), data(invoice), message("Pembayaran berhasil!"))
 }
