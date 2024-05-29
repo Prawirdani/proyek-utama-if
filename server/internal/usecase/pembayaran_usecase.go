@@ -22,7 +22,6 @@ type PembayaranUseCase interface {
 type pembayaranUsecase struct {
 	pembayaranRepo repository.PembayaranRepository
 	pesananRepo    repository.PesananRepository
-	mejaRepo       repository.MejaRepository
 	cfg            *config.Config
 }
 
@@ -30,13 +29,11 @@ func NewPembayaranUsecase(
 	cfg *config.Config,
 	pembayaranRepo repository.PembayaranRepository,
 	pesananRepo repository.PesananRepository,
-	mejaRepo repository.MejaRepository,
 ) pembayaranUsecase {
 	return pembayaranUsecase{
 		cfg:            cfg,
 		pembayaranRepo: pembayaranRepo,
 		pesananRepo:    pesananRepo,
-		mejaRepo:       mejaRepo,
 	}
 }
 
@@ -144,5 +141,5 @@ func (u pembayaranUsecase) BayarPesanan(ctx context.Context, request model.Pemba
 	// Create Pembayaran
 	pembayaran := entity.NewPembayaran(*pesanan, *metodePembayaran)
 
-	return u.pembayaranRepo.CreatePembayaran(ctxWT, *pesanan, *pembayaran)
+	return u.pembayaranRepo.InsertPembayaran(ctxWT, *pesanan, *pembayaran)
 }

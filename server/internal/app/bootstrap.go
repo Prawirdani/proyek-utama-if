@@ -23,7 +23,7 @@ func (s Server) bootstrap() {
 	menuUC := usecase.NewMenuUsecase(menuRepository, s.cfg)
 	mejaUC := usecase.NewMejaUseCase(mejaRepository, s.cfg)
 	pesananUC := usecase.NewPesananUseCase(s.cfg, menuRepository, mejaRepository, pesananRepository)
-	pembayaranUC := usecase.NewPembayaranUsecase(s.cfg, pembayaranRepository, pesananRepository, mejaRepository)
+	pembayaranUC := usecase.NewPembayaranUsecase(s.cfg, pembayaranRepository, pesananRepository)
 
 	// Setup Handlers
 	userHandler := http.NewUserHandler(s.cfg, userUC)
