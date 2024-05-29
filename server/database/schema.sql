@@ -47,7 +47,7 @@ CREATE TABLE metode_pembayaran (
 );
 
 CREATE TYPE TipePesanan AS ENUM ('Dine In', 'Take Away');
-CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Dihidangkan');
+CREATE TYPE StatusPesanan AS ENUM ('Diproses', 'Disajikan', 'Selesai', 'Batal');
 CREATE TABLE pesanan (
 	id SERIAL PRIMARY KEY,
 	nama_pelanggan VARCHAR(100) NOT NULL,
@@ -83,9 +83,3 @@ CREATE TABLE pembayaran (
 	CONSTRAINT fk_metode_pembayaran_id FOREIGN KEY(metode_pembayaran_id) REFERENCES metode_pembayaran(id)
 );
 
-CREATE TABLE receipts (
-	id SERIAL PRIMARY KEY,
-	pesanan_id INTEGER NOT NULL UNIQUE,
-	data JSONB NOT NULL,
-	CONSTRAINT fk_pesanan_id FOREIGN KEY(pesanan_id) REFERENCES pesanan(id)
-);
