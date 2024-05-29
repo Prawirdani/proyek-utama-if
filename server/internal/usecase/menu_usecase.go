@@ -29,7 +29,7 @@ type menuUsecase struct {
 	cfg      *config.Config
 }
 
-func NewMenuUsecase(menuRepo repository.MenuRepository, cfg *config.Config) menuUsecase {
+func NewMenuUsecase(cfg *config.Config, menuRepo repository.MenuRepository) menuUsecase {
 	return menuUsecase{
 		menuRepo: menuRepo,
 		cfg:      cfg,

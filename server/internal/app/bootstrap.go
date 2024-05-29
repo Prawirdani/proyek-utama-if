@@ -20,8 +20,8 @@ func (s Server) bootstrap() {
 	// Setup Usecases
 	userUC := usecase.NewUserUseCase(s.cfg, userRepository)
 	authUC := usecase.NewAuthUseCase(s.cfg, userRepository)
-	menuUC := usecase.NewMenuUsecase(menuRepository, s.cfg)
-	mejaUC := usecase.NewMejaUseCase(mejaRepository, s.cfg)
+	menuUC := usecase.NewMenuUsecase(s.cfg, menuRepository)
+	mejaUC := usecase.NewMejaUseCase(s.cfg, mejaRepository)
 	pesananUC := usecase.NewPesananUseCase(s.cfg, menuRepository, mejaRepository, pesananRepository)
 	pembayaranUC := usecase.NewPembayaranUsecase(s.cfg, pembayaranRepository, pesananRepository)
 
@@ -30,7 +30,7 @@ func (s Server) bootstrap() {
 	authHandler := http.NewAuthHandler(s.cfg, authUC)
 	menuHandler := http.NewMenuHandler(s.cfg, menuUC)
 	mejaHandler := http.NewMejaHandler(s.cfg, mejaUC)
-	pembayaranHandler := http.NewPembayaranHandler(pembayaranUC, s.cfg)
+	pembayaranHandler := http.NewPembayaranHandler(s.cfg, pembayaranUC)
 	pesananHandler := http.NewPesananHandler(s.cfg, pesananUC)
 
 	middlewares := middleware.NewMiddlewareManager(s.cfg)

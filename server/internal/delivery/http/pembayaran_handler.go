@@ -14,7 +14,7 @@ type PembayaranHandler struct {
 	cfg          *config.Config
 }
 
-func NewPembayaranHandler(pembayaranUC usecase.PembayaranUseCase, cfg *config.Config) PembayaranHandler {
+func NewPembayaranHandler(cfg *config.Config, pembayaranUC usecase.PembayaranUseCase) PembayaranHandler {
 	return PembayaranHandler{
 		pembayaranUC: pembayaranUC,
 		cfg:          cfg,

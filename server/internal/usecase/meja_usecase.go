@@ -23,7 +23,7 @@ type mejaUseCase struct {
 	cfg      *config.Config
 }
 
-func NewMejaUseCase(mejaRepo repository.MejaRepository, cfg *config.Config) mejaUseCase {
+func NewMejaUseCase(cfg *config.Config, mejaRepo repository.MejaRepository) mejaUseCase {
 	return mejaUseCase{
 		mejaRepo: mejaRepo,
 		cfg:      cfg,
