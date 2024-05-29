@@ -32,11 +32,16 @@ func (ph PesananHandler) HandlePesananDineIn(w http.ResponseWriter, r *http.Requ
 	userId := int(authClaims["user"].(map[string]interface{})["id"].(float64))
 	reqBody.KasirID = userId
 
-	if err := ph.pesananUC.CreateDineIn(r.Context(), reqBody); err != nil {
+	id, err := ph.pesananUC.CreateDineIn(r.Context(), reqBody)
+	if err != nil {
 		return err
 	}
 
-	return response(w, status(http.StatusCreated), message("Pesanan dine-in berhasil dibuat"))
+	body := map[string]int{
+		"id": *id,
+	}
+
+	return response(w, status(http.StatusCreated), data(body), message("Pesanan dine-in berhasil dibuat"))
 }
 
 func (ph PesananHandler) HandlePesananTakeAway(w http.ResponseWriter, r *http.Request) error {
@@ -49,11 +54,16 @@ func (ph PesananHandler) HandlePesananTakeAway(w http.ResponseWriter, r *http.Re
 	userId := int(authClaims["user"].(map[string]interface{})["id"].(float64))
 	reqBody.KasirID = userId
 
-	if err := ph.pesananUC.CreateTakeAway(r.Context(), reqBody); err != nil {
+	id, err := ph.pesananUC.CreateTakeAway(r.Context(), reqBody)
+	if err != nil {
 		return err
 	}
 
-	return response(w, status(http.StatusCreated), message("Pesanan take-away berhasil dibuat"))
+	body := map[string]int{
+		"id": *id,
+	}
+
+	return response(w, status(http.StatusCreated), data(body), message("Pesanan take-away berhasil dibuat"))
 }
 
 func (ph PesananHandler) HandleListPesanan(w http.ResponseWriter, r *http.Request) error {

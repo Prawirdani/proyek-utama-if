@@ -11,8 +11,8 @@ import (
 )
 
 type PesananUseCase interface {
-	CreateDineIn(ctx context.Context, request model.PesananDineInRequest) error
-	CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) error
+	CreateDineIn(ctx context.Context, request model.PesananDineInRequest) (*int, error)
+	CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) (*int, error)
 	ListPesanan(ctx context.Context) ([]entity.Pesanan, error)
 	FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error)
 	FindPesananWithQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error)
@@ -45,37 +45,37 @@ func (pu pesananUseCase) FindPesananWithQuery(ctx context.Context, query *model.
 	return pu.pesananRepo.SelectQuery(ctxWT, query)
 }
 
-func (pu pesananUseCase) CreateDineIn(ctx context.Context, request model.PesananDineInRequest) error {
+func (pu pesananUseCase) CreateDineIn(ctx context.Context, request model.PesananDineInRequest) (*int, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
 	// Retrieve meja then check is it Tersedia
 	meja, err := pu.mejaRepo.SelectWhere(ctxWT, "id", request.MejaID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Create new PesananDineIn
 	pesanan, err := entity.NewPesananDineIn(request, meja)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// Retrieve menus & assign to Pesanan Detail
 	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
-		return err
+		return nil, err
 	}
 
 	return pu.pesananRepo.Insert(ctxWT, pesanan)
 }
 
-func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) error {
+func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) (*int, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
 	pesanan := entity.NewPesananTakeAway(request)
 	if err := menusToDetails(ctxWT, pu.menuRepo, &pesanan, request.Menu...); err != nil {
-		return err
+		return nil, err
 	}
 
 	return pu.pesananRepo.Insert(ctxWT, pesanan)

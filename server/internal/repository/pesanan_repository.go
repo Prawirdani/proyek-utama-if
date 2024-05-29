@@ -13,7 +13,7 @@ import (
 )
 
 type PesananRepository interface {
-	Insert(ctx context.Context, p entity.Pesanan) error
+	Insert(ctx context.Context, p entity.Pesanan) (*int, error)
 	Select(ctx context.Context) ([]entity.Pesanan, error)
 	SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Pesanan, error)
 	// Complex Search With Query Params
@@ -54,14 +54,14 @@ func (pr pesananRepository) SelectQuery(ctx context.Context, query *model.Query)
 	return &pesanan, nil
 }
 
-func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) error {
+func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) (*int, error) {
 	query := `INSERT INTO pesanan (nama_pelanggan, kasir_id, meja_id, tipe_pesanan, status_pesanan, catatan, total, waktu_pesanan) 
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
 
 	tx, err := pr.db.Begin(ctx)
 	if err != nil {
 		slog.Error("PesananRepository.Insert.Begin", slog.Any("error", err))
-		return err
+		return nil, err
 	}
 	defer tx.Rollback(ctx)
 
@@ -87,23 +87,27 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) error 
 
 	if err != nil {
 		slog.Error("PesananRepository.Insert.Exec.Pesanan", slog.Any("error", err))
-		return err
+		return nil, err
 	}
 
 	err = pr.batchDetailInsert(ctx, tx, pesananID, p.Detail)
 	if err != nil {
 		slog.Error("PesananRepository.Insert.Exec.DetailPesanan", slog.Any("error", err))
-		return err
+		return nil, err
 	}
 
 	// if pesanan is dine in update meja status to terisi
 	if p.IsDineIn() {
 		if err := updateMeja(ctx, tx, *p.Meja); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return tx.Commit(ctx)
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return &pesananID, nil
 }
 
 func (pr pesananRepository) Select(ctx context.Context) ([]entity.Pesanan, error) {
