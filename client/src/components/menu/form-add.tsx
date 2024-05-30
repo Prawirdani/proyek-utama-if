@@ -3,24 +3,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, Image } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { fetchMenus } from '@/api/menu';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Label } from '@/components/ui/label';
 import { AddMenuSchema, addMenuSchema } from '@/lib/schemas/menu';
+import { useMenu } from '@/context/MenuProvider';
 
-interface Props {
-  kategories: Kategori[];
-  setMenus: (menus: Menu[]) => void;
-}
-
-export default function FormAdd({ setMenus, kategories }: Props) {
+export default function FormAdd() {
   const [open, setOpen] = useState(false);
 
+  const { categories, invalidate } = useMenu();
   const form = useForm<AddMenuSchema>({
     resolver: zodResolver(addMenuSchema),
     defaultValues: {
@@ -37,12 +32,8 @@ export default function FormAdd({ setMenus, kategories }: Props) {
     control,
     reset,
     register,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = form;
-
-  useEffect(() => {
-    reset();
-  }, [open]);
 
   const onSubmit = async (data: AddMenuSchema) => {
     const formData = new FormData();
@@ -69,12 +60,34 @@ export default function FormAdd({ setMenus, kategories }: Props) {
         description: 'Menu berhasil ditambahkan',
         duration: 2000,
       });
-      const revalidateMenus = await fetchMenus();
-      setMenus(revalidateMenus!);
+      invalidate();
       setOpen(false);
       return;
     }
   };
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  let imageInputRef: HTMLInputElement;
+  const { ref, ...imageRegister } = register('image');
+
+  const handleImageClick = () => {
+    imageInputRef.click();
+  };
+
+  const imageOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    form.setValue('image', e.target.files);
+    if (files && files[0]) {
+      const imageUrl = URL.createObjectURL(files[0]);
+      setImagePreview(imageUrl);
+    }
+  };
+
+  useEffect(() => {
+    reset();
+    setImagePreview(null);
+  }, [open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {/* Dialog Trigger Button */}
@@ -84,89 +97,111 @@ export default function FormAdd({ setMenus, kategories }: Props) {
       </Button>
       {/* Dialog Trigger Button */}
 
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader className="mb-4">
               <DialogTitle>Tambah menu baru</DialogTitle>
             </DialogHeader>
-            <div className="mb-4 space-y-2">
-              <FormField
-                control={control}
-                name="nama"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel htmlFor="nama">Nama Menu</FormLabel>
-                    <FormControl>
-                      <Input id="nama" placeholder="Masukkan nama menu" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+            <div className="grid grid-cols-5 gap-4 mb-4">
+              <div
+                className="col-span-2 border rounded-md justify-center items-center flex flex-col hover:cursor-pointer"
+                onClick={handleImageClick}
+              >
+                <input
+                  type="file"
+                  id="image"
+                  hidden
+                  {...imageRegister}
+                  ref={(e) => {
+                    imageInputRef = e!;
+                  }}
+                  onChange={imageOnChange}
+                />
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="object-fit" />
+                ) : (
+                  <Image className="h-12 w-12" />
                 )}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={control}
-                  name="harga"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel htmlFor="harga">Harga</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Masukkan harga menu"
-                          id="harga"
-                          type="number"
-                          {...field}
-                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="kategori_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel htmlFor="kategori_id">Kategori Menu</FormLabel>
-                      <Select onValueChange={field.onChange} name={field.name}>
-                        <FormControl id="kategori_id">
-                          <SelectTrigger>
-                            <SelectValue placeholder="Pilih Kategori" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {kategories.map((kategori) => (
-                            <SelectItem key={kategori.id} value={String(kategori.id)}>
-                              {kategori.nama}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {errors.image && (
+                  <span className="mt-2 text-sm text-destructive text-center">{String(errors.image.message)}</span>
+                )}
               </div>
-
-              <div>
-                <Label htmlFor="image">Gambar Menu</Label>
-                <Input id="image" type="file" {...register('image', { required: true })} />
-
+              <div className="space-y-2 col-span-3">
                 <FormField
                   control={control}
-                  name="deskripsi"
+                  name="nama"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel htmlFor="deskripsi">Deskripsi</FormLabel>
+                      <FormLabel htmlFor="nama">Nama Menu</FormLabel>
                       <FormControl>
-                        <Textarea id="deskripsi" placeholder="Masukkan deskripsi menu" {...field} />
+                        <Input id="nama" placeholder="Masukkan nama menu" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={control}
+                    name="harga"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel htmlFor="harga">Harga</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Masukkan harga menu"
+                            id="harga"
+                            type="number"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="kategori_id"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel htmlFor="kategori_id">Kategori Menu</FormLabel>
+                        <Select onValueChange={field.onChange} name={field.name}>
+                          <FormControl id="kategori_id">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Pilih Kategori" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category.id} value={String(category.id)}>
+                                {category.nama}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div>
+                  <FormField
+                    control={control}
+                    name="deskripsi"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel htmlFor="deskripsi">Deskripsi</FormLabel>
+                        <FormControl>
+                          <Textarea id="deskripsi" placeholder="Masukkan deskripsi menu" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
