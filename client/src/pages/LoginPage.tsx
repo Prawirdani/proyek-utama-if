@@ -2,7 +2,6 @@ import TitleSetter from '@/components/pageTitle';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/context/useAuth';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { H2 } from '@/components/typography';
 import { LoginSchema, loginSchema } from '@/lib/schemas/auth';
+import { useAuth } from '@/context/AuthProvider';
 
 export default function LoginPage() {
   const navigate = useNavigate();

@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/useAuth';
 import { ChevronDown, LogOut, Menu } from 'lucide-react';
 import {
   DropdownMenu,
@@ -8,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthProvider';
 
 interface HeaderProps {
   sidebarOpen: boolean;

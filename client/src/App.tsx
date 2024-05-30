@@ -2,10 +2,9 @@ import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import './App.css';
 import Dashboard from './layout/Dashboard';
 import LoginPage from './pages/LoginPage';
-import AuthProvider from './context/authProvider';
+import AuthProvider, { useAuth } from './context/AuthProvider';
 import { useEffect, useState } from 'react';
 import Loader from '@/components/ui/loader';
-import { useAuth } from './context/useAuth';
 import { IndexPage, MenuPage, TablePage, PaymentPage, UserPage, ReportPage } from './pages/dashboard';
 import { Toaster } from './components/ui/toaster';
 
