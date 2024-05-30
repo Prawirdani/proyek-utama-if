@@ -15,7 +15,7 @@ interface Props {
   setOpen: (open: boolean) => void;
   updateTarget: Meja;
 }
-export const MejaUpdateForm = ({ open, setOpen, updateTarget }: Props) => {
+export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {}, [open, updateTarget]);
@@ -92,4 +92,4 @@ export const MejaUpdateForm = ({ open, setOpen, updateTarget }: Props) => {
       </DialogContent>
     </Dialog>
   );
-};
+}

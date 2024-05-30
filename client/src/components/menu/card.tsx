@@ -1,10 +1,10 @@
 import { Card } from '@/components/ui/card';
 import { SquarePen } from 'lucide-react';
 
-interface MenuCardProps {
+interface Props {
   menu: Menu;
 }
-export default function MenuCard({ menu }: MenuCardProps) {
+export default function MenuCard({ menu }: Props) {
   return (
     <Card className="shadow-lg hover:cursor-pointer relative">
       <div className="space-y-1">

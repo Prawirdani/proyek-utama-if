@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
 import { AddPaymentMethodSchema, addPaymentMethodSchema } from '@/lib/schemas/payment';
 
-export const PaymentMethodAddForm = () => {
+export default function FormAdd() {
   const { invalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethods();
 
   const [open, setOpen] = useState(false);
@@ -144,4 +144,4 @@ export const PaymentMethodAddForm = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}

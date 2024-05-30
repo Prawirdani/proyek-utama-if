@@ -17,7 +17,7 @@ interface Props {
   setOpen: (open: boolean) => void;
   updateTarget: MetodePembayaran;
 }
-export const PaymentMethodUpdateForm = ({ open, setOpen, updateTarget }: Props) => {
+export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {}, [open, updateTarget]);
@@ -146,4 +146,4 @@ export const PaymentMethodUpdateForm = ({ open, setOpen, updateTarget }: Props) 
       </DialogContent>
     </Dialog>
   );
-};
+}

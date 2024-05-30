@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useTables } from '@/context/TableProvider';
 import { AddTableSchema, addTableSchema } from '@/lib/schemas/table';
 
-export const MejaAddForm = () => {
+export default function FormAdd() {
   const { invalidate, addMeja } = useTables();
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -89,4 +89,4 @@ export const MejaAddForm = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}

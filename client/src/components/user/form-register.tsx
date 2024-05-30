@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { useUsers } from '@/context/UserProvider';
 import { UserRegisterSchema, userRegisterSchema } from '@/lib/schemas/user';
 
-export const RegisterForm = () => {
+export default function FormRegister() {
   const { invalidate, registerUser } = useUsers();
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -143,4 +143,4 @@ export const RegisterForm = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}

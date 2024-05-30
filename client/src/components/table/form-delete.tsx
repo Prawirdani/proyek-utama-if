@@ -10,7 +10,7 @@ interface Props {
   setOpen: (open: boolean) => void;
 }
 
-export default function DeleteMejaDialog({ id, open, setOpen }: Props) {
+export default function FormDelete({ id, open, setOpen }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
   const { deleteMeja, invalidate } = useTables();

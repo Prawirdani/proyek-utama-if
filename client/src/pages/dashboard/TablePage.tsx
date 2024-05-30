@@ -1,5 +1,5 @@
 import TablesProvider from '@/context/TableProvider';
-import Page from './table/Page';
+import Page from '@/components/table/Page';
 
 export default function TablePage() {
   return (

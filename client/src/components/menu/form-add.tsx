@@ -13,12 +13,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '@/components/ui/label';
 import { AddMenuSchema, addMenuSchema } from '@/lib/schemas/menu';
 
-interface AddMenuDialogProps {
+interface Props {
   kategories: Kategori[];
   setMenus: (menus: Menu[]) => void;
 }
 
-export default function AddMenuDialog({ setMenus, kategories }: AddMenuDialogProps) {
+export default function FormAdd({ setMenus, kategories }: Props) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<AddMenuSchema>({

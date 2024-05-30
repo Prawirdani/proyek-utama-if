@@ -8,20 +8,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { useUsers } from '@/context/UserProvider';
-import { UserResetPasswordSchema, userResetPasswordSchema } from '@/lib/schemas/user';
+import { UserUpdateSchema, userUpdateSchema } from '@/lib/schemas/user';
 
 interface Props {
   open: boolean;
   setOpen: (open: boolean) => void;
   updateTarget: User;
 }
-export const ResetPasswordForm = ({ open, setOpen, updateTarget }: Props) => {
+export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { invalidate, resetPassword } = useUsers();
+  const { invalidate, updateUser } = useUsers();
 
-  const form = useForm<UserResetPasswordSchema>({
-    resolver: zodResolver(userResetPasswordSchema),
+  const form = useForm<UserUpdateSchema>({
+    resolver: zodResolver(userUpdateSchema),
   });
 
   const {
@@ -34,14 +34,14 @@ export const ResetPasswordForm = ({ open, setOpen, updateTarget }: Props) => {
   useEffect(() => {
     reset({
       id: updateTarget.id,
-      newPassword: '',
-      repeatPassword: '',
+      nama: updateTarget.nama,
+      username: updateTarget.username,
     });
     setApiError(null);
   }, [open, updateTarget]);
 
-  const onSubmit = async (data: UserResetPasswordSchema) => {
-    const res = await resetPassword(data);
+  const onSubmit = async (data: UserUpdateSchema) => {
+    const res = await updateUser(data);
     if (!res.ok) {
       const resBody = (await res.json()) as ErrorResponse;
       setApiError(resBody.error.message);
@@ -62,48 +62,43 @@ export const ResetPasswordForm = ({ open, setOpen, updateTarget }: Props) => {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader className="mb-4">
-              <DialogTitle>Reset Password Pengguna</DialogTitle>
+              <DialogTitle>Update Data Pengguna</DialogTitle>
             </DialogHeader>
             <div className="mb-4 space-y-2">
-              {/* Input New Password */}
+              {/* Input Nama Kasir */}
               <FormField
                 control={control}
-                name="newPassword"
+                name="nama"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="newPassword">Password Baru</FormLabel>
+                    <FormLabel htmlFor="nama">Nama Kasir</FormLabel>
                     <FormControl>
-                      <Input id="newPassword" type="password" placeholder="Masukkan password baru" {...field} />
+                      <Input id="nama" placeholder="Masukkan nama kasir" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* Input New Password */}
+              {/* Input Nama Kasir */}
 
-              {/* Input Repeat Password */}
+              {/* Input Username  */}
               <FormField
                 control={control}
-                name="repeatPassword"
+                name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel htmlFor="repeatPassword">Ulangi password</FormLabel>
+                    <FormLabel htmlFor="username">Username</FormLabel>
                     <FormControl>
-                      <Input
-                        id="repeatPassword"
-                        type="password"
-                        placeholder="Masukkan ulang password baru"
-                        {...field}
-                      />
+                      <Input id="username" placeholder="Masukkan username pengguna" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* Input Repeat Password */}
-
+              {/* Input Username  */}
               <p className="text-sm text-destructive">{apiError}</p>
             </div>
+
             <div className="flex justify-end">
               <Button type="submit">
                 {isSubmitting && <Loader2 />}
@@ -115,4 +110,4 @@ export const ResetPasswordForm = ({ open, setOpen, updateTarget }: Props) => {
       </DialogContent>
     </Dialog>
   );
-};
+}
