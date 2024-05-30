@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useEffect, useState } from 'react';
 import { useTables } from '@/context/TableProvider';
 import { AddTableSchema, addTableSchema } from '@/lib/schemas/table';
+import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormAdd() {
   const { invalidate, addMeja } = useTables();
@@ -37,8 +38,8 @@ export default function FormAdd() {
   const onSubmit = async (data: AddTableSchema) => {
     const res = await addMeja(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

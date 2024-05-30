@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { H2 } from '@/components/typography';
 import { LoginSchema, loginSchema } from '@/lib/schemas/auth';
 import { useAuth } from '@/context/AuthProvider';
+import { isErrorResponse } from '@/api/fetcher';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -29,7 +30,8 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginSchema) => {
     const res = await login(values.username, values.password);
     if (!res.ok) {
-      setApiError(res.status === 401 ? 'Username atau password salah!' : 'Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     navigate('/', { replace: true });

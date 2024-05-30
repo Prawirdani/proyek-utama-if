@@ -1,3 +1,4 @@
+import { isErrorResponse } from '@/api/fetcher';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
@@ -22,8 +23,8 @@ export default function FormDelete({ id, open, setOpen }: Props) {
   const handleDelete = async () => {
     const res = await deleteMeja(id);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      setApiError(resBody.error.message);
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

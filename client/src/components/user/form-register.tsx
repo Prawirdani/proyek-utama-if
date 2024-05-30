@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useEffect, useState } from 'react';
 import { useUsers } from '@/context/UserProvider';
 import { UserRegisterSchema, userRegisterSchema } from '@/lib/schemas/user';
+import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormRegister() {
   const { invalidate, registerUser } = useUsers();
@@ -40,8 +41,8 @@ export default function FormRegister() {
   const onSubmit = async (data: UserRegisterSchema) => {
     const res = await registerUser(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

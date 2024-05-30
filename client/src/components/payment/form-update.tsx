@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
 import { toast } from '@/components/ui/use-toast';
 import { UpdatePaymentMethodSchema, updatePaymentMethodSchema } from '@/lib/schemas/payment';
+import { isErrorResponse } from '@/api/fetcher';
 
 interface Props {
   open: boolean;
@@ -48,8 +49,8 @@ export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const onSubmit = async (data: UpdatePaymentMethodSchema) => {
     const res = await updateMetodePembayaran(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

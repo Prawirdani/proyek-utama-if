@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { useTables } from '@/context/TableProvider';
 import { UpdateTableSchema, updateTableSchema } from '@/lib/schemas/table';
+import { isErrorResponse } from '@/api/fetcher';
 
 interface Props {
   open: boolean;
@@ -44,8 +45,8 @@ export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const onSubmit = async (data: UpdateTableSchema) => {
     const res = await updateMeja(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

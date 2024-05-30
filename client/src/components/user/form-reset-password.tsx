@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { useUsers } from '@/context/UserProvider';
 import { UserResetPasswordSchema, userResetPasswordSchema } from '@/lib/schemas/user';
+import { isErrorResponse } from '@/api/fetcher';
 
 interface Props {
   open: boolean;
@@ -43,8 +44,8 @@ export default function FormResetPassword({ open, setOpen, updateTarget }: Props
   const onSubmit = async (data: UserResetPasswordSchema) => {
     const res = await resetPassword(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      setApiError(resBody.error.message);
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();

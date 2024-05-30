@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useEffect, useState } from 'react';
 import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
 import { AddPaymentMethodSchema, addPaymentMethodSchema } from '@/lib/schemas/payment';
+import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormAdd() {
   const { invalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethods();
@@ -42,8 +43,8 @@ export default function FormAdd() {
   const onSubmit = async (data: AddPaymentMethodSchema) => {
     const res = await addMetodePembayaran(data);
     if (!res.ok) {
-      const resBody = (await res.json()) as ErrorResponse;
-      res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
+      const resBody = await res.json();
+      setApiError(isErrorResponse(resBody) ? resBody.error.message : 'Terjadi kesalahan');
       return;
     }
     invalidate();
