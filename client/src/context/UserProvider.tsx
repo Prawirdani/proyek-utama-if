@@ -88,7 +88,7 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
       method: 'PUT',
       credentials: 'include',
       body: JSON.stringify({
-        password: data.newPassword,
+        newPassword: data.newPassword,
       }),
     });
   };

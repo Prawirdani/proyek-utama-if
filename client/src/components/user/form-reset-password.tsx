@@ -51,7 +51,7 @@ export default function FormResetPassword({ open, setOpen, updateTarget }: Props
     invalidate();
     reset();
     toast({
-      description: 'Berhasil update akun pengguna.',
+      description: 'Berhasil reset password pengguna.',
     });
     setOpen(false);
     setApiError(null);

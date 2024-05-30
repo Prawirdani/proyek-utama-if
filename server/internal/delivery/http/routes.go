@@ -73,7 +73,7 @@ func MapUserRoutes(r chi.Router, h UserHandler, mw middleware.MiddlewareManager)
 		subR.Put("/users/{userID}", handlerFn(h.HandleUpdateUser))
 		subR.Put("/users/{userID}/activate", handlerFn(h.HandleActivateUser))
 		subR.Delete("/users/{userID}/deactivate", handlerFn(h.HandleDeactivateUser))
-		subR.Put("/users/{userID}/reset-password", handlerFn(h.HandleDeactivateUser))
+		subR.Put("/users/{userID}/reset-password", handlerFn(h.HandleResetPassword))
 	})
 }
 
