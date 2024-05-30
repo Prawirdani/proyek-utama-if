@@ -77,9 +77,9 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
+                {apiError && <p className="text-destructive font-medium text-sm">{apiError}</p>}
               </div>
               <div>
-                {apiError && <p className="text-destructive font-medium text-sm">{apiError}</p>}
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
                     <>
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   )}
                 </Button>
               </div>
-            </form>
+            </form>{' '}
           </Form>
         </Card>
       </div>
