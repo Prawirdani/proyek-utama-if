@@ -8,8 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { UpdateSchema, updateSchema, usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
 import { toast } from '@/components/ui/use-toast';
+import { UpdatePaymentMethodSchema, updatePaymentMethodSchema } from '@/lib/schemas/payment';
 
 interface Props {
   open: boolean;
@@ -21,10 +22,10 @@ export const PaymentMethodUpdateForm = ({ open, setOpen, updateTarget }: Props) 
 
   useEffect(() => {}, [open, updateTarget]);
 
-  const { tipe_pembayaran_opts, updateMetodePembayaran, revalidate } = usePaymentMethods();
+  const { tipe_pembayaran_opts, updateMetodePembayaran, invalidate } = usePaymentMethods();
 
-  const form = useForm<UpdateSchema>({
-    resolver: zodResolver(updateSchema),
+  const form = useForm<UpdatePaymentMethodSchema>({
+    resolver: zodResolver(updatePaymentMethodSchema),
   });
 
   const {
@@ -44,14 +45,14 @@ export const PaymentMethodUpdateForm = ({ open, setOpen, updateTarget }: Props) 
     setApiError(null);
   }, [open, updateTarget]);
 
-  const onSubmit = async (data: UpdateSchema) => {
+  const onSubmit = async (data: UpdatePaymentMethodSchema) => {
     const res = await updateMetodePembayaran(data);
     if (!res.ok) {
       const resBody = (await res.json()) as ErrorResponse;
       res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
       return;
     }
-    revalidate();
+    invalidate();
     reset();
     toast({
       description: 'Berhasil update metode pembayaran.',

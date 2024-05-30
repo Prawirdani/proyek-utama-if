@@ -13,7 +13,7 @@ interface Props {
 export default function DeleteMejaDialog({ id, open, setOpen }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { deleteMeja, revalidate } = useTables();
+  const { deleteMeja, invalidate } = useTables();
 
   useEffect(() => {
     setApiError(null);
@@ -26,7 +26,7 @@ export default function DeleteMejaDialog({ id, open, setOpen }: Props) {
       setApiError(resBody.error.message);
       return;
     }
-    revalidate();
+    invalidate();
     toast({ description: 'Berhasil menghapus meja.' });
     setOpen(false);
     setApiError(null);

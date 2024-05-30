@@ -7,22 +7,17 @@ import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { H2 } from '@/components/typography';
-
-const formSchema = z.object({
-  username: z.string().min(1, { message: 'Mohon isi kolom username' }),
-  password: z.string().min(1, { message: 'Mohon isi kolom password' }),
-});
+import { LoginSchema, loginSchema } from '@/lib/schemas/auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: '',
       password: '',
@@ -31,7 +26,7 @@ export default function LoginPage() {
 
   const { login } = useAuth();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: LoginSchema) => {
     const res = await login(values.username, values.password);
     if (!res.ok) {
       setApiError(res.status === 401 ? 'Username atau password salah!' : 'Terjadi kesalahan');

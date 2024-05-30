@@ -7,15 +7,16 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { AddSchema, addSchema, useTables } from '@/context/TableProvider';
+import { useTables } from '@/context/TableProvider';
+import { AddTableSchema, addTableSchema } from '@/lib/schemas/table';
 
 export const MejaAddForm = () => {
-  const { revalidate, addMeja } = useTables();
+  const { invalidate, addMeja } = useTables();
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const form = useForm<AddSchema>({
-    resolver: zodResolver(addSchema),
+  const form = useForm<AddTableSchema>({
+    resolver: zodResolver(addTableSchema),
     defaultValues: {
       nomor: '',
     },
@@ -33,14 +34,14 @@ export const MejaAddForm = () => {
     setApiError(null);
   }, [open]);
 
-  const onSubmit = async (data: AddSchema) => {
+  const onSubmit = async (data: AddTableSchema) => {
     const res = await addMeja(data);
     if (!res.ok) {
       const resBody = (await res.json()) as ErrorResponse;
       res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
       return;
     }
-    revalidate();
+    invalidate();
     reset();
     toast({ description: 'Berhasil menambahkan meja.' });
     setOpen(false);

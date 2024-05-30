@@ -1,39 +1,6 @@
 import { Fetch } from '@/api/fetcher';
+import { UserRegisterSchema, UserResetPasswordSchema, UserUpdateSchema } from '@/lib/schemas/user';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { z } from 'zod';
-
-export const registerSchema = z
-  .object({
-    nama: z.string().min(1, { message: 'Isi nama lengkap pengguna.' }),
-    username: z.string().min(1, { message: 'Isi username pengguna.' }),
-    password: z.string().min(1, { message: 'Isi password pengguna.' }),
-    repeatPassword: z.string().min(1, { message: 'Isi ulang password pengguna.' }),
-  })
-  .refine((data) => data.password === data.repeatPassword, {
-    message: 'Password tidak sama.',
-    path: ['repeatPassword'],
-  });
-
-export const updateSchema = z.object({
-  id: z.number(),
-  nama: z.string().min(1, { message: 'Isi nama lengkap pengguna.' }),
-  username: z.string().min(1, { message: 'Isi username pengguna.' }),
-});
-
-export const resetPasswordSchema = z
-  .object({
-    id: z.number(),
-    newPassword: z.string().min(1, { message: 'Isi kolom password.' }),
-    repeatPassword: z.string().min(1, { message: 'Isi kolom ulangi password.' }),
-  })
-  .refine((data) => data.newPassword === data.repeatPassword, {
-    message: 'Password tidak sama.',
-    path: ['repeatPassword'],
-  });
-
-export type RegisterSchema = z.infer<typeof registerSchema>;
-export type UpdateSchema = z.infer<typeof updateSchema>;
-export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
 
 type Context = {
   // Fetch State
@@ -43,15 +10,15 @@ type Context = {
   // Revalidate Data
   invalidate: () => Promise<void>;
   // add new meja
-  registerUser: (data: RegisterSchema) => Promise<Response>;
+  registerUser: (data: UserRegisterSchema) => Promise<Response>;
   // update meja
-  updateUser: (data: UpdateSchema) => Promise<Response>;
+  updateUser: (data: UserUpdateSchema) => Promise<Response>;
   // deactivate user
   deactivateUser: (id: number) => Promise<Response>;
   // activate user
   activateUser: (id: number) => Promise<Response>;
   // reset password
-  resetPassword: (data: ResetPasswordSchema) => Promise<Response>;
+  resetPassword: (data: UserResetPasswordSchema) => Promise<Response>;
 };
 
 export const UsersContext = createContext<Context>({} as Context);
@@ -79,7 +46,7 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
     return resBody.data;
   };
 
-  const registerUser = async (data: RegisterSchema) => {
+  const registerUser = async (data: UserRegisterSchema) => {
     return await fetch('/api/v1/auth/register', {
       method: 'POST',
       credentials: 'include',
@@ -91,7 +58,7 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
     });
   };
 
-  const updateUser = async (data: UpdateSchema) => {
+  const updateUser = async (data: UserUpdateSchema) => {
     return await fetch(`/api/v1/users/${data.id}`, {
       method: 'PUT',
       credentials: 'include',
@@ -116,7 +83,7 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
     });
   };
 
-  const resetPassword = async (data: ResetPasswordSchema) => {
+  const resetPassword = async (data: UserResetPasswordSchema) => {
     return await fetch(`/api/v1/users/${data.id}/reset-password`, {
       method: 'PUT',
       credentials: 'include',

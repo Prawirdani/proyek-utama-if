@@ -9,16 +9,17 @@ import { toast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { AddSchema, addSchema, usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { AddPaymentMethodSchema, addPaymentMethodSchema } from '@/lib/schemas/payment';
 
 export const PaymentMethodAddForm = () => {
-  const { revalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethods();
+  const { invalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethods();
 
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const form = useForm<AddSchema>({
-    resolver: zodResolver(addSchema),
+  const form = useForm<AddPaymentMethodSchema>({
+    resolver: zodResolver(addPaymentMethodSchema),
     defaultValues: {
       tipePembayaran: '',
       metode: '',
@@ -38,14 +39,14 @@ export const PaymentMethodAddForm = () => {
     setApiError(null);
   }, [open]);
 
-  const onSubmit = async (data: AddSchema) => {
+  const onSubmit = async (data: AddPaymentMethodSchema) => {
     const res = await addMetodePembayaran(data);
     if (!res.ok) {
       const resBody = (await res.json()) as ErrorResponse;
       res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
       return;
     }
-    revalidate();
+    invalidate();
     reset();
     toast({ description: 'Berhasil menambahkan metode pembayaran.' });
     setOpen(false);

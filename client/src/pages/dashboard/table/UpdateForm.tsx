@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { UpdateSchema, updateSchema, useTables } from '@/context/TableProvider';
+import { useTables } from '@/context/TableProvider';
+import { UpdateTableSchema, updateTableSchema } from '@/lib/schemas/table';
 
 interface Props {
   open: boolean;
@@ -19,10 +20,10 @@ export const MejaUpdateForm = ({ open, setOpen, updateTarget }: Props) => {
 
   useEffect(() => {}, [open, updateTarget]);
 
-  const { updateMeja, revalidate } = useTables();
+  const { updateMeja, invalidate } = useTables();
 
-  const form = useForm<UpdateSchema>({
-    resolver: zodResolver(updateSchema),
+  const form = useForm<UpdateTableSchema>({
+    resolver: zodResolver(updateTableSchema),
   });
 
   const {
@@ -40,14 +41,14 @@ export const MejaUpdateForm = ({ open, setOpen, updateTarget }: Props) => {
     setApiError(null);
   }, [open, updateTarget]);
 
-  const onSubmit = async (data: UpdateSchema) => {
+  const onSubmit = async (data: UpdateTableSchema) => {
     const res = await updateMeja(data);
     if (!res.ok) {
       const resBody = (await res.json()) as ErrorResponse;
       res.status === 409 ? setApiError(resBody.error.message) : setApiError('Terjadi kesalahan');
       return;
     }
-    revalidate();
+    invalidate();
     reset();
     toast({
       description: 'Berhasil update meja.',

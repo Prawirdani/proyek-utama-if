@@ -9,32 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { fetchMenus } from '@/api/menu';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Label } from '@/components/ui/label';
+import { AddMenuSchema, addMenuSchema } from '@/lib/schemas/menu';
 
 interface AddMenuDialogProps {
   kategories: Kategori[];
   setMenus: (menus: Menu[]) => void;
 }
 
-const formSchema = z.object({
-  nama: z.string().min(1, { message: 'Nama menu harus di isi.' }).trim(),
-  harga: z.number().min(1, { message: 'Tentukan harga menu' }),
-  kategori_id: z.string().min(1, { message: 'Tentukan kategori menu' }),
-  deskripsi: z.string().min(1, { message: 'Isi deskripsi menu' }),
-  image: z
-    .any()
-    // To not allow empty files
-    .refine((files) => files?.length >= 1, { message: 'Photo is required.' }),
-  // To not allow files other than images
-});
-
 export default function AddMenuDialog({ setMenus, kategories }: AddMenuDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AddMenuSchema>({
+    resolver: zodResolver(addMenuSchema),
     defaultValues: {
       nama: '',
       harga: 0,
@@ -56,7 +44,7 @@ export default function AddMenuDialog({ setMenus, kategories }: AddMenuDialogPro
     reset();
   }, [open]);
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: AddMenuSchema) => {
     const formData = new FormData();
     formData.append(
       'data',

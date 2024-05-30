@@ -1,21 +1,7 @@
 import { Fetch } from '@/api/fetcher';
 import { fetchPaymentMethods } from '@/api/payment_method';
+import { AddPaymentMethodSchema, UpdatePaymentMethodSchema } from '@/lib/schemas/payment';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { z } from 'zod';
-
-export const addSchema = z.object({
-  tipePembayaran: z.string().min(1, { message: 'Mohon pilih tipe pembayaran' }),
-  metode: z.string().min(1, { message: 'Mohon isi kolom nama metode' }),
-  deskripsi: z.string().min(1, { message: 'Mohon isi kolom deskripsi' }),
-});
-
-export const updateSchema = z.object({
-  ...addSchema.shape,
-  id: z.number(),
-});
-
-export type AddSchema = z.infer<typeof addSchema>;
-export type UpdateSchema = z.infer<typeof updateSchema>;
 
 type PaymentMethodsCtxType = {
   // Fetch State
@@ -25,11 +11,11 @@ type PaymentMethodsCtxType = {
   // Tipe Pembayaran Form Options
   tipe_pembayaran_opts: TipePembayaran[];
   // Revalidate Data
-  revalidate: () => Promise<void>;
+  invalidate: () => Promise<void>;
   // add new metode pembayaran
-  addMetodePembayaran: (data: AddSchema) => Promise<Response>;
+  addMetodePembayaran: (data: AddPaymentMethodSchema) => Promise<Response>;
   // update metode pembayaran
-  updateMetodePembayaran: (data: UpdateSchema) => Promise<Response>;
+  updateMetodePembayaran: (data: UpdatePaymentMethodSchema) => Promise<Response>;
   // delete metode pembayaran
   deleteMetodePembayaran: (id: number) => Promise<Response>;
 };
@@ -48,11 +34,11 @@ export default function PaymentMethodsProvider({ children }: { children: React.R
       .finally(() => setLoading(false));
   }, []);
 
-  const revalidate = async () => {
+  const invalidate = async () => {
     await Fetch(fetchPaymentMethods)().then((data) => set_payment_methods(data));
   };
 
-  const addMetodePembayaran = async (data: AddSchema) => {
+  const addMetodePembayaran = async (data: AddPaymentMethodSchema) => {
     return await fetch('/api/v1/payments/methods', {
       method: 'POST',
       credentials: 'include',
@@ -64,7 +50,7 @@ export default function PaymentMethodsProvider({ children }: { children: React.R
     });
   };
 
-  const updateMetodePembayaran = async (data: UpdateSchema) => {
+  const updateMetodePembayaran = async (data: UpdatePaymentMethodSchema) => {
     return await fetch(`/api/v1/payments/methods/${data.id}`, {
       method: 'PUT',
       credentials: 'include',
@@ -88,7 +74,7 @@ export default function PaymentMethodsProvider({ children }: { children: React.R
         loading,
         payment_methods,
         tipe_pembayaran_opts,
-        revalidate,
+        invalidate,
         addMetodePembayaran,
         updateMetodePembayaran,
         deleteMetodePembayaran,

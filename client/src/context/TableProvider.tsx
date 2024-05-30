@@ -1,19 +1,7 @@
 import { Fetch } from '@/api/fetcher';
 import { fetchTables } from '@/api/table';
+import { AddTableSchema, UpdateTableSchema } from '@/lib/schemas/table';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { z } from 'zod';
-
-export const addSchema = z.object({
-  nomor: z.string().min(1, { message: 'Mohon isi kolom nomor meja' }),
-});
-
-export const updateSchema = z.object({
-  ...addSchema.shape,
-  id: z.number(),
-});
-
-export type AddSchema = z.infer<typeof addSchema>;
-export type UpdateSchema = z.infer<typeof updateSchema>;
 
 type Context = {
   // Fetch State
@@ -21,11 +9,11 @@ type Context = {
   // Data State
   tables: Meja[] | null;
   // Revalidate Data
-  revalidate: () => Promise<void>;
+  invalidate: () => Promise<void>;
   // add new meja
-  addMeja: (data: AddSchema) => Promise<Response>;
+  addMeja: (data: AddTableSchema) => Promise<Response>;
   // update meja
-  updateMeja: (data: UpdateSchema) => Promise<Response>;
+  updateMeja: (data: UpdateTableSchema) => Promise<Response>;
   // delete meja
   deleteMeja: (id: number) => Promise<Response>;
 };
@@ -43,11 +31,11 @@ export default function TablesProvider({ children }: { children: React.ReactNode
       .finally(() => setLoading(false));
   }, []);
 
-  const revalidate = async () => {
+  const invalidate = async () => {
     await Fetch(fetchTables)().then((data) => setTables(data));
   };
 
-  const addMeja = async (data: AddSchema) => {
+  const addMeja = async (data: AddTableSchema) => {
     return await fetch('/api/v1/tables', {
       method: 'POST',
       credentials: 'include',
@@ -57,7 +45,7 @@ export default function TablesProvider({ children }: { children: React.ReactNode
     });
   };
 
-  const updateMeja = async (data: UpdateSchema) => {
+  const updateMeja = async (data: UpdateTableSchema) => {
     return await fetch(`/api/v1/tables/${data.id}`, {
       method: 'PUT',
       credentials: 'include',
@@ -78,7 +66,7 @@ export default function TablesProvider({ children }: { children: React.ReactNode
       value={{
         loading,
         tables,
-        revalidate,
+        invalidate,
         addMeja,
         updateMeja,
         deleteMeja,

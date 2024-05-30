@@ -13,7 +13,7 @@ interface Props {
 export default function Delete({ id, open, setOpen }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { deleteMetodePembayaran, revalidate } = usePaymentMethods();
+  const { deleteMetodePembayaran, invalidate } = usePaymentMethods();
 
   useEffect(() => {
     setApiError(null);
@@ -26,7 +26,7 @@ export default function Delete({ id, open, setOpen }: Props) {
       setApiError(resBody.error.message);
       return;
     }
-    revalidate();
+    invalidate();
     toast({ description: 'Berhasil menghapus metode pembayaran.' });
     setOpen(false);
     setApiError(null);
