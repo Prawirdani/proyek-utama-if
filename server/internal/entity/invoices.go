@@ -2,13 +2,13 @@ package entity
 
 import "github.com/prawirdani/golang-restapi/internal/model"
 
-type Invoice struct {
+type Receipt struct {
 	Pesanan    model.PesananResponse `json:"pesanan"`
 	Pembayaran Pembayaran            `json:"pembayaran"`
 }
 
-func NewInvoice(pesanan Pesanan, pembayaran Pembayaran) *Invoice {
-	return &Invoice{
+func NewInvoice(pesanan Pesanan, pembayaran Pembayaran) *Receipt {
+	return &Receipt{
 		Pesanan:    pesanan.ToResponse(),
 		Pembayaran: pembayaran,
 	}

@@ -17,7 +17,7 @@ type PembayaranRepository interface {
 	SelectMetodePembayaran(ctx context.Context) ([]entity.MetodePembayaran, error)
 	SelectMetodePembayaranWhere(ctx context.Context, field string, searchVal any) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, mp entity.MetodePembayaran) error
-	InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Invoice, error)
+	InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Receipt, error)
 }
 
 type pembayaranRepository struct {
@@ -100,7 +100,7 @@ func (r pembayaranRepository) UpdateMetodePembayaran(ctx context.Context, mp ent
 	return nil
 }
 
-func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Invoice, error) {
+func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan entity.Pesanan, pembayaran entity.Pembayaran) (*entity.Receipt, error) {
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		slog.Error("PesananRepository.CreatePembayaran.Begin", slog.Any("error", err))
@@ -149,7 +149,7 @@ func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan enti
 		return nil, err
 	}
 
-	invoice := entity.NewInvoice(pesanan, p)
+	receipt := entity.NewInvoice(pesanan, p)
 
-	return invoice, nil
+	return receipt, nil
 }

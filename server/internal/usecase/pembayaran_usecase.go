@@ -16,7 +16,7 @@ type PembayaranUseCase interface {
 	FindMetodePembayaran(ctx context.Context, id int) (*entity.MetodePembayaran, error)
 	UpdateMetodePembayaran(ctx context.Context, request model.UpdateMetodePembayaranRequest) error
 	RemoveMetodePembayaran(ctx context.Context, id int) error
-	BayarPesanan(ctx context.Context, request model.PembayaranRequest) (*entity.Invoice, error)
+	BayarPesanan(ctx context.Context, request model.PembayaranRequest) (*entity.Receipt, error)
 }
 
 type pembayaranUsecase struct {
@@ -118,7 +118,7 @@ func (u pembayaranUsecase) RemoveMetodePembayaran(ctx context.Context, id int) e
 	return nil
 }
 
-func (u pembayaranUsecase) BayarPesanan(ctx context.Context, request model.PembayaranRequest) (*entity.Invoice, error) {
+func (u pembayaranUsecase) BayarPesanan(ctx context.Context, request model.PembayaranRequest) (*entity.Receipt, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
