@@ -16,6 +16,7 @@ func (s Server) bootstrap() {
 	mejaRepository := repository.NewMejaRepository(s.pg, s.cfg)
 	pesananRepository := repository.NewPesananRepository(s.pg, s.cfg)
 	pembayaranRepository := repository.NewPembayaranRepository(s.pg, s.cfg)
+	reportRepository := repository.NewReportRepository(s.pg, s.cfg)
 
 	// Setup Usecases
 	userUC := usecase.NewUserUseCase(s.cfg, userRepository)
@@ -24,6 +25,7 @@ func (s Server) bootstrap() {
 	mejaUC := usecase.NewMejaUseCase(s.cfg, mejaRepository)
 	pesananUC := usecase.NewPesananUseCase(s.cfg, menuRepository, mejaRepository, pesananRepository)
 	pembayaranUC := usecase.NewPembayaranUsecase(s.cfg, pembayaranRepository, pesananRepository)
+	reportUC := usecase.NewReportUsecase(s.cfg, reportRepository)
 
 	// Setup Handlers
 	userHandler := http.NewUserHandler(s.cfg, userUC)
@@ -32,6 +34,7 @@ func (s Server) bootstrap() {
 	mejaHandler := http.NewMejaHandler(s.cfg, mejaUC)
 	pembayaranHandler := http.NewPembayaranHandler(s.cfg, pembayaranUC)
 	pesananHandler := http.NewPesananHandler(s.cfg, pesananUC)
+	reportHandler := http.NewReportHandler(s.cfg, reportUC)
 
 	middlewares := middleware.NewMiddlewareManager(s.cfg)
 
@@ -48,5 +51,6 @@ func (s Server) bootstrap() {
 		http.MapMejaRoutes(v1, mejaHandler, middlewares)
 		http.MapPesananRoutes(v1, pesananHandler, middlewares)
 		http.MapPembayaranRoutes(v1, pembayaranHandler, middlewares)
+		http.MapReportRoutes(v1, reportHandler, middlewares)
 	})
 }

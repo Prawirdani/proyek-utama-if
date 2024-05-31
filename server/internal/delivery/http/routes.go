@@ -77,6 +77,10 @@ func MapUserRoutes(r chi.Router, h UserHandler, mw middleware.MiddlewareManager)
 	})
 }
 
+func MapReportRoutes(r chi.Router, h ReportHandler, mw middleware.MiddlewareManager) {
+	r.Get("/reports", handlerFn(h.GenerateReport))
+}
+
 func RegisterClientApp(r chi.Router) {
 	fs := http.FileServer(http.Dir("../client/dist"))
 	r.With(clientSideRouting).Get("/*", http.StripPrefix("/", fs).ServeHTTP)
