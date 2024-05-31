@@ -7,7 +7,7 @@ type Receipt struct {
 	Pembayaran Pembayaran            `json:"pembayaran"`
 }
 
-func NewInvoice(pesanan Pesanan, pembayaran Pembayaran) *Receipt {
+func NewReceipt(pesanan Pesanan, pembayaran Pembayaran) *Receipt {
 	return &Receipt{
 		Pesanan:    pesanan.ToResponse(),
 		Pembayaran: pembayaran,

@@ -149,7 +149,7 @@ func (r pembayaranRepository) InsertPembayaran(ctx context.Context, pesanan enti
 		return nil, err
 	}
 
-	receipt := entity.NewInvoice(pesanan, p)
+	receipt := entity.NewReceipt(pesanan, p)
 
 	return receipt, nil
 }
