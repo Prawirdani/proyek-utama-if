@@ -139,12 +139,18 @@ func (ph PesananHandler) HandleBatalkanPesanan(w http.ResponseWriter, r *http.Re
 }
 
 func (ph PesananHandler) HandlePesananWithQuery(w http.ResponseWriter, r *http.Request) error {
-	query, err := model.ParsePesananQuery(r)
-	if err != nil {
+	var pesananQueries = map[string]string{
+		"id":         "id",
+		"status":     "p.status_pesanan",
+		"mejaID":     "m.id",
+		"statusMeja": "m.status",
+	}
+	queries := httputil.NewQueryParam(pesananQueries)
+	if err := queries.Parse(r); err != nil {
 		return err
 	}
 
-	ps, err := ph.pesananUC.FindPesananWithQuery(r.Context(), query)
+	ps, err := ph.pesananUC.FindPesananWithQuery(r.Context(), queries)
 	if err != nil {
 		return err
 	}

@@ -15,7 +15,8 @@ type PesananUseCase interface {
 	CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) (*int, error)
 	ListPesanan(ctx context.Context) ([]entity.Pesanan, error)
 	FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error)
-	FindPesananWithQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error)
+	// Return Single Pesanan with multiple search query
+	FindPesananWithQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error)
 	AddMenuToPesanan(ctx context.Context, pesananID int, request model.PesananMenuRequest) error
 	RemoveMenuFromPesanan(ctx context.Context, pesananID int, detailID int) error
 	BatalkanPesanan(ctx context.Context, pesananID int) error
@@ -38,7 +39,7 @@ func NewPesananUseCase(cfg *config.Config, menuRepo repository.MenuRepository, m
 	}
 }
 
-func (pu pesananUseCase) FindPesananWithQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error) {
+func (pu pesananUseCase) FindPesananWithQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 

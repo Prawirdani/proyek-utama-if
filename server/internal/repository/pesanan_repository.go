@@ -17,7 +17,7 @@ type PesananRepository interface {
 	Select(ctx context.Context) ([]entity.Pesanan, error)
 	SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Pesanan, error)
 	// Complex Search With Query Params
-	SelectQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error)
+	SelectQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error)
 	Update(ctx context.Context, pesanan entity.Pesanan) error
 	DeleteDetail(ctx context.Context, pesanan entity.Pesanan, detailID int) error
 }
@@ -34,12 +34,13 @@ func NewPesananRepository(db *pgxpool.Pool, cfg *config.Config) pesananRepositor
 	}
 }
 
-func (pr pesananRepository) SelectQuery(ctx context.Context, query *model.Query) (*entity.Pesanan, error) {
+func (pr pesananRepository) SelectQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error) {
 	var pesanan entity.Pesanan
 	baseQuery := querySelectPesanan
 	queryStr := query.Build(baseQuery)
 
-	row := pr.db.QueryRow(ctx, queryStr, query.StmtArgs...)
+	args := query.Args()
+	row := pr.db.QueryRow(ctx, queryStr, args...)
 	err := pesanan.ScanRow(row)
 	if err != nil {
 		if err == pgx.ErrNoRows {
