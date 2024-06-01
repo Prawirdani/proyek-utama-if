@@ -184,15 +184,13 @@ func (pr pesananRepository) Update(ctx context.Context, pesanan entity.Pesanan) 
 	}
 
 	// Seperating new added details and stored details, new added details via usecase will have ID=0
-	newDetail, _ := func() (new []entity.DetailPesanan, stored []entity.DetailPesanan) {
+	newDetail := func() (new []entity.DetailPesanan) {
 		for _, d := range pesanan.Detail {
 			if d.ID == 0 {
 				new = append(new, d)
-			} else {
-				stored = append(stored, d)
 			}
 		}
-		return new, stored
+		return new
 	}()
 
 	// if there are new details, insert them
