@@ -1,10 +1,10 @@
-import PaymentMethodsProvider from '@/context/PaymentMethodsProvider';
+import PaymentMethodProvider from '@/context/PaymentMethodProvider';
 import Page from '@/components/payment/Page';
 
 export default function PaymentPage() {
   return (
-    <PaymentMethodsProvider>
+    <PaymentMethodProvider>
       <Page />
-    </PaymentMethodsProvider>
+    </PaymentMethodProvider>
   );
 }

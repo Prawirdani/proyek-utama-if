@@ -3,7 +3,7 @@ import { fetchPaymentMethods } from '@/api/payment_method';
 import { AddPaymentMethodSchema, UpdatePaymentMethodSchema } from '@/lib/schemas/payment';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type PaymentMethodsCtxType = {
+type PaymentMethodContext = {
   // Fetch State
   loading: boolean;
   // Data State
@@ -20,10 +20,16 @@ type PaymentMethodsCtxType = {
   deleteMetodePembayaran: (id: number) => Promise<Response>;
 };
 
-export const PaymentMethodsContext = createContext<PaymentMethodsCtxType>({} as PaymentMethodsCtxType);
-export const usePaymentMethods = () => useContext(PaymentMethodsContext);
+const PaymentMethodCtx = createContext<PaymentMethodContext | undefined>(undefined);
+export const usePaymentMethod = () => {
+  const ctx = useContext(PaymentMethodCtx);
+  if (ctx === undefined) {
+    throw new Error('Component is not wrapped with PaymentMethodsProvider');
+  }
+  return ctx;
+};
 
-export default function PaymentMethodsProvider({ children }: { children: React.ReactNode }) {
+export default function PaymentMethodProvider({ children }: { children: React.ReactNode }) {
   const tipe_pembayaran_opts: TipePembayaran[] = ['CARD', 'MOBILE'];
   const [payment_methods, set_payment_methods] = useState<MetodePembayaran[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,7 +75,7 @@ export default function PaymentMethodsProvider({ children }: { children: React.R
     });
   };
   return (
-    <PaymentMethodsContext.Provider
+    <PaymentMethodCtx.Provider
       value={{
         loading,
         payment_methods,
@@ -81,6 +87,6 @@ export default function PaymentMethodsProvider({ children }: { children: React.R
       }}
     >
       {children}
-    </PaymentMethodsContext.Provider>
+    </PaymentMethodCtx.Provider>
   );
 }

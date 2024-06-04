@@ -35,7 +35,7 @@ const sidebarItems = [
     path: '/users',
   },
   {
-    name: 'Laporan',
+    name: 'Transaksi',
     icon: <ReceiptText />,
     path: '/reports',
   },

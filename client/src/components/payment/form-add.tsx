@@ -9,12 +9,12 @@ import { toast } from '@/components/ui/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { usePaymentMethod } from '@/context/PaymentMethodProvider';
 import { AddPaymentMethodSchema, addPaymentMethodSchema } from '@/lib/schemas/payment';
 import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormAdd() {
-  const { invalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethods();
+  const { invalidate, addMetodePembayaran, tipe_pembayaran_opts } = usePaymentMethod();
 
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);

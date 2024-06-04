@@ -7,8 +7,14 @@ type MenuContext = {
   invalidate: () => Promise<void>;
 };
 
-const MenuCtx = createContext<MenuContext>({} as MenuContext);
-export const useMenu = () => useContext(MenuCtx);
+const MenuCtx = createContext<MenuContext | undefined>(undefined);
+export const useMenu = () => {
+  const ctx = useContext(MenuCtx);
+  if (ctx === undefined) {
+    throw new Error('Component is not wrapped with MenuProvider');
+  }
+  return ctx;
+};
 
 export default function MenuProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);

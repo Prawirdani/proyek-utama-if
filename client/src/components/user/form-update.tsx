@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { useUsers } from '@/context/UserProvider';
+import { useUser } from '@/context/UserProvider';
 import { UserUpdateSchema, userUpdateSchema } from '@/lib/schemas/user';
 import { isErrorResponse } from '@/api/fetcher';
 
@@ -19,7 +19,7 @@ interface Props {
 export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { invalidate, updateUser } = useUsers();
+  const { invalidate, updateUser } = useUser();
 
   const form = useForm<UserUpdateSchema>({
     resolver: zodResolver(userUpdateSchema),

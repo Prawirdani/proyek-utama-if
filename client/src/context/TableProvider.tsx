@@ -3,7 +3,7 @@ import { fetchTables } from '@/api/table';
 import { AddTableSchema, UpdateTableSchema } from '@/lib/schemas/table';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Context = {
+type TableContext = {
   // Fetch State
   loading: boolean;
   // Data State
@@ -18,10 +18,16 @@ type Context = {
   deleteMeja: (id: number) => Promise<Response>;
 };
 
-export const TableContext = createContext<Context>({} as Context);
-export const useTables = () => useContext(TableContext);
+const TableCtx = createContext<TableContext | undefined>(undefined);
+export const useTable = () => {
+  const ctx = useContext(TableCtx);
+  if (ctx === undefined) {
+    throw new Error('Component is not wrapped with TableProvider');
+  }
+  return ctx;
+};
 
-export default function TablesProvider({ children }: { children: React.ReactNode }) {
+export default function TableProvider({ children }: { children: React.ReactNode }) {
   const [tables, setTables] = useState<Meja[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +68,7 @@ export default function TablesProvider({ children }: { children: React.ReactNode
     });
   };
   return (
-    <TableContext.Provider
+    <TableCtx.Provider
       value={{
         loading,
         tables,
@@ -73,6 +79,6 @@ export default function TablesProvider({ children }: { children: React.ReactNode
       }}
     >
       {children}
-    </TableContext.Provider>
+    </TableCtx.Provider>
   );
 }

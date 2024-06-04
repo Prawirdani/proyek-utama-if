@@ -4,7 +4,7 @@ import Loader from '@/components/ui/loader';
 import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card } from '@/components/ui/card';
-import { useTables } from '@/context/TableProvider';
+import { useTable } from '@/context/TableProvider';
 import { Button } from '@/components/ui/button';
 import { SquarePen, Trash } from 'lucide-react';
 import FormAdd from './form-add';
@@ -12,7 +12,7 @@ import FormUpdate from './form-update';
 import FormDelete from './form-delete';
 
 export default function Page() {
-  const { loading, tables } = useTables();
+  const { loading, tables } = useTable();
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [updateTarget, setUpdateTarget] = useState<Meja>({} as Meja);

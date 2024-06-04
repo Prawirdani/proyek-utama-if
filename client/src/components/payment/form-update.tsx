@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { usePaymentMethod } from '@/context/PaymentMethodProvider';
 import { toast } from '@/components/ui/use-toast';
 import { UpdatePaymentMethodSchema, updatePaymentMethodSchema } from '@/lib/schemas/payment';
 import { isErrorResponse } from '@/api/fetcher';
@@ -23,7 +23,7 @@ export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
 
   useEffect(() => {}, [open, updateTarget]);
 
-  const { tipe_pembayaran_opts, updateMetodePembayaran, invalidate } = usePaymentMethods();
+  const { tipe_pembayaran_opts, updateMetodePembayaran, invalidate } = usePaymentMethod();
 
   const form = useForm<UpdatePaymentMethodSchema>({
     resolver: zodResolver(updatePaymentMethodSchema),

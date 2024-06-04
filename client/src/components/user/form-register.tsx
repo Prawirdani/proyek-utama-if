@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { useUsers } from '@/context/UserProvider';
+import { useUser } from '@/context/UserProvider';
 import { UserRegisterSchema, userRegisterSchema } from '@/lib/schemas/user';
 import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormRegister() {
-  const { invalidate, registerUser } = useUsers();
+  const { invalidate, registerUser } = useUser();
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 

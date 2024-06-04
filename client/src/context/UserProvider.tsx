@@ -2,7 +2,7 @@ import { Fetch } from '@/api/fetcher';
 import { UserRegisterSchema, UserResetPasswordSchema, UserUpdateSchema } from '@/lib/schemas/user';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type Context = {
+type UserContext = {
   // Fetch State
   loading: boolean;
   // Data State
@@ -21,10 +21,16 @@ type Context = {
   resetPassword: (data: UserResetPasswordSchema) => Promise<Response>;
 };
 
-export const UsersContext = createContext<Context>({} as Context);
-export const useUsers = () => useContext(UsersContext);
+export const UserCtx = createContext<UserContext | undefined>(undefined);
+export const useUser = () => {
+  const ctx = useContext(UserCtx);
+  if (ctx === undefined) {
+    throw new Error('Component is not wrapped with UserProvider');
+  }
+  return ctx;
+};
 
-export default function UsersProvider({ children }: { children: React.ReactNode }) {
+export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<User[] | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,7 +100,7 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
   };
 
   return (
-    <UsersContext.Provider
+    <UserCtx.Provider
       value={{
         loading,
         users,
@@ -107,6 +113,6 @@ export default function UsersProvider({ children }: { children: React.ReactNode 
       }}
     >
       {children}
-    </UsersContext.Provider>
+    </UserCtx.Provider>
   );
 }

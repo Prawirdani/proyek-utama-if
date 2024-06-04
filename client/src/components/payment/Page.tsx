@@ -3,7 +3,7 @@ import { H2 } from '@/components/typography';
 import Loader from '@/components/ui/loader';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { usePaymentMethods } from '@/context/PaymentMethodsProvider';
+import { usePaymentMethod } from '@/context/PaymentMethodProvider';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { SquarePen, Trash } from 'lucide-react';
@@ -12,7 +12,7 @@ import FormUpdate from './form-update';
 import FormDelete from './form-delete';
 
 export default function Page() {
-  const { loading, payment_methods } = usePaymentMethods();
+  const { loading, payment_methods } = usePaymentMethod();
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [updateTarget, setUpdateTarget] = useState<MetodePembayaran>({} as MetodePembayaran);

@@ -2,7 +2,7 @@ import { isErrorResponse } from '@/api/fetcher';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { useTables } from '@/context/TableProvider';
+import { useTable } from '@/context/TableProvider';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 export default function FormDelete({ id, open, setOpen }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { deleteMeja, invalidate } = useTables();
+  const { deleteMeja, invalidate } = useTable();
 
   useEffect(() => {
     setApiError(null);

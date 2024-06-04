@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { useUsers } from '@/context/UserProvider';
+import { useUser } from '@/context/UserProvider';
 import { UserResetPasswordSchema, userResetPasswordSchema } from '@/lib/schemas/user';
 import { isErrorResponse } from '@/api/fetcher';
 
@@ -19,7 +19,7 @@ interface Props {
 export default function FormResetPassword({ open, setOpen, updateTarget }: Props) {
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const { invalidate, resetPassword } = useUsers();
+  const { invalidate, resetPassword } = useUser();
 
   const form = useForm<UserResetPasswordSchema>({
     resolver: zodResolver(userResetPasswordSchema),

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { useTables } from '@/context/TableProvider';
+import { useTable } from '@/context/TableProvider';
 import { UpdateTableSchema, updateTableSchema } from '@/lib/schemas/table';
 import { isErrorResponse } from '@/api/fetcher';
 
@@ -21,7 +21,7 @@ export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
 
   useEffect(() => {}, [open, updateTarget]);
 
-  const { updateMeja, invalidate } = useTables();
+  const { updateMeja, invalidate } = useTable();
 
   const form = useForm<UpdateTableSchema>({
     resolver: zodResolver(updateTableSchema),

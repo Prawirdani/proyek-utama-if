@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 
-type AuthCtxType = {
+type AuthContext = {
   user: AuthUser;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<Response>;
@@ -8,14 +8,16 @@ type AuthCtxType = {
   logout: () => Promise<void>;
 };
 
-type Props = {
-  children: React.ReactNode;
+const AuthCtx = createContext<AuthContext | undefined>(undefined);
+export const useAuth = () => {
+  const ctx = useContext(AuthCtx);
+  if (ctx === undefined) {
+    throw new Error('Component is not wrapped with AuthProvider');
+  }
+  return ctx;
 };
 
-const AuthCtx = createContext<AuthCtxType>({} as AuthCtxType);
-export const useAuth = () => useContext(AuthCtx);
-
-export default function AuthProvider({ children }: Props) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser>({} as AuthUser);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 

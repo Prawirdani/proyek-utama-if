@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useEffect, useState } from 'react';
-import { useTables } from '@/context/TableProvider';
+import { useTable } from '@/context/TableProvider';
 import { AddTableSchema, addTableSchema } from '@/lib/schemas/table';
 import { isErrorResponse } from '@/api/fetcher';
 
 export default function FormAdd() {
-  const { invalidate, addMeja } = useTables();
+  const { invalidate, addMeja } = useTable();
   const [open, setOpen] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
