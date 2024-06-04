@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthProvider';
 import LoginPage from './LoginPage';
 import Loader from '@/components/ui/loader';
-import Dashboard from '@/layout/Dashboard';
+import Dashboard from '@/components/layout/Dashboard';
 
 export const routes: RouteObject[] = [
   {
