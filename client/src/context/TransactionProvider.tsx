@@ -46,21 +46,28 @@ export default function TrasactionProvider({ children }: { children: React.React
   const [query, setQuery] = useState<string>(`?page=1&limit=10`);
   const [loading, setLoading] = useState<boolean>(true);
   const [transactions, setTransactions] = useState<Transaksi[]>([]);
+  const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('Pagination Changed');
     setQuery(`?page=${pagination.page}&limit=${pagination.limit}`);
   }, [pagination]);
 
   useEffect(() => {
-    console.log('Query Changed');
-    setPageLoading(true);
-    const debounced = debounce(async () => {
-      await Fetch(fetchTransactions)()
-        .then(() => setLoading(false))
-        .catch((err) => console.error(err));
-    }, 300);
-    debounced().then(() => setPageLoading(false));
+    // Non-Debounced Fetch on First Load
+    if (!mounted) {
+      fetchTransactions().then(() => {
+        setLoading(false);
+        setMounted(true);
+      });
+    } else {
+      console.log('debounced');
+      setPageLoading(true);
+      const debounced = debounce(Fetch(fetchTransactions), 100);
+      debounced().then(() => setPageLoading(false));
+      return () => {
+        debounced.cancel();
+      };
+    }
   }, [query]);
 
   async function fetchTransactions() {
