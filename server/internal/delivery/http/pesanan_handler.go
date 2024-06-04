@@ -67,7 +67,19 @@ func (ph PesananHandler) HandlePesananTakeAway(w http.ResponseWriter, r *http.Re
 }
 
 func (ph PesananHandler) HandleListPesanan(w http.ResponseWriter, r *http.Request) error {
-	ps, err := ph.pesananUC.ListPesanan(r.Context())
+	qProcessor := httputil.NewQueryProcessor(
+		httputil.WithPagination("page", "limit"),
+		httputil.WithSort(map[string]string{
+			"total":    "p.total",
+			"datetime": "p.waktu_pesanan",
+		}),
+	)
+
+	if err := qProcessor.Parse(r); err != nil {
+		return err
+	}
+
+	ps, err := ph.pesananUC.ListPesanan(r.Context(), qProcessor)
 	if err != nil {
 		return err
 	}
@@ -140,12 +152,15 @@ func (ph PesananHandler) HandleBatalkanPesanan(w http.ResponseWriter, r *http.Re
 
 func (ph PesananHandler) HandlePesananWithQuery(w http.ResponseWriter, r *http.Request) error {
 	var pesananQueries = map[string]string{
-		"id":         "id",
 		"status":     "p.status_pesanan",
 		"mejaID":     "m.id",
 		"statusMeja": "m.status",
 	}
-	queries := httputil.NewQueryParam(pesananQueries)
+
+	queries := httputil.NewQueryProcessor(
+		httputil.WithFilter(pesananQueries),
+	)
+
 	if err := queries.Parse(r); err != nil {
 		return err
 	}

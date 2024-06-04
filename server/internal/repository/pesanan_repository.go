@@ -14,7 +14,7 @@ import (
 
 type PesananRepository interface {
 	Insert(ctx context.Context, p entity.Pesanan) (*int, error)
-	Select(ctx context.Context) ([]entity.Pesanan, error)
+	Select(ctx context.Context, query model.Query) ([]entity.Pesanan, error)
 	SelectWhere(ctx context.Context, field string, searchVal any) (*entity.Pesanan, error)
 	// Complex Search With Query Params
 	SelectQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error)
@@ -36,10 +36,8 @@ func NewPesananRepository(db *pgxpool.Pool, cfg *config.Config) pesananRepositor
 
 func (pr pesananRepository) SelectQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error) {
 	var pesanan entity.Pesanan
-	baseQuery := querySelectPesanan
-	queryStr := query.Build(baseQuery)
+	queryStr, args := query.Build(querySelectPesanan)
 
-	args := query.Args()
 	row := pr.db.QueryRow(ctx, queryStr, args...)
 	err := pesanan.ScanRow(row)
 	if err != nil {
@@ -111,21 +109,11 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) (*int,
 	return &pesananID, nil
 }
 
-func (pr pesananRepository) Select(ctx context.Context) ([]entity.Pesanan, error) {
+func (pr pesananRepository) Select(ctx context.Context, query model.Query) ([]entity.Pesanan, error) {
 	var ps []entity.Pesanan
 
-	orderClause := `
-	ORDER BY
-    CASE
-        WHEN status_pesanan = 'Diproses' THEN 1
-        WHEN status_pesanan = 'Disajikan' THEN 2
-        WHEN status_pesanan = 'Selesai' THEN 3
-        ELSE 4
-    END,
-    p.id;
-    `
-	query := fmt.Sprintf("%s %s", querySelectPesanan, orderClause)
-	rows, err := pr.db.Query(ctx, query)
+	queryStr, args := query.Build(querySelectPesanan)
+	rows, err := pr.db.Query(ctx, queryStr, args...)
 	if err != nil {
 		return nil, err
 	}

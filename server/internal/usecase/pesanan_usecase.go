@@ -13,7 +13,7 @@ import (
 type PesananUseCase interface {
 	CreateDineIn(ctx context.Context, request model.PesananDineInRequest) (*int, error)
 	CreateTakeAway(ctx context.Context, request model.PesananTakeAwayRequest) (*int, error)
-	ListPesanan(ctx context.Context) ([]entity.Pesanan, error)
+	ListPesanan(ctx context.Context, query model.Query) ([]entity.Pesanan, error)
 	FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error)
 	// Return Single Pesanan with multiple search query
 	FindPesananWithQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error)
@@ -82,11 +82,11 @@ func (pu pesananUseCase) CreateTakeAway(ctx context.Context, request model.Pesan
 	return pu.pesananRepo.Insert(ctxWT, pesanan)
 }
 
-func (pu pesananUseCase) ListPesanan(ctx context.Context) ([]entity.Pesanan, error) {
+func (pu pesananUseCase) ListPesanan(ctx context.Context, query model.Query) ([]entity.Pesanan, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(pu.cfg.Context.Timeout)*time.Second)
 	defer cancel()
 
-	return pu.pesananRepo.Select(ctxWT)
+	return pu.pesananRepo.Select(ctxWT, query)
 }
 
 func (pu pesananUseCase) FindPesanan(ctx context.Context, pesananID int) (*entity.Pesanan, error) {
