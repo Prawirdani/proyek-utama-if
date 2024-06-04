@@ -1,6 +1,5 @@
 import IndexPage from './IndexPage';
 import MenuPage from './MenuPage';
-import ReportPage from './ReportPage';
 import UserPage from './UserPage';
 import TablePage from './TablePage';
 import PaymentPage from './PaymentPage';
@@ -10,6 +9,7 @@ import { useAuth } from '@/context/AuthProvider';
 import LoginPage from './LoginPage';
 import Loader from '@/components/ui/loader';
 import Dashboard from '@/components/layout/Dashboard';
+import TransactionPage from './TransactionPage';
 
 export const routes: RouteObject[] = [
   {
@@ -40,8 +40,8 @@ export const routes: RouteObject[] = [
             element: <UserPage />,
           },
           {
-            path: '/reports',
-            element: <ReportPage />,
+            path: '/transactions',
+            element: <TransactionPage />,
           },
         ],
       },

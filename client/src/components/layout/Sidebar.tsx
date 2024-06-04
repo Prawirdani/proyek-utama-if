@@ -37,7 +37,7 @@ const sidebarItems = [
   {
     name: 'Transaksi',
     icon: <ReceiptText />,
-    path: '/reports',
+    path: '/transactions',
   },
 ];
 

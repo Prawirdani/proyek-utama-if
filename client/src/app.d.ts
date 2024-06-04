@@ -74,6 +74,28 @@ declare global {
     createdAt: Date;
     updatedAt: Date;
   };
+
+  type DetailTransaksi = {
+    id: number;
+    namaMenu: string;
+    hargaMenu: number;
+    kuantitas: number;
+    subtotal: number;
+  };
+
+  type statusTransaksi = 'Diproses' | 'Selesai' | 'Batal';
+  type Transaksi = {
+    id: number;
+    namaPelanggan: string;
+    kasir: string;
+    meja: Meja;
+    tipe: string;
+    status: statusTransaksi;
+    catatan: string;
+    detail: DetailTransaksi[];
+    total: number;
+    waktuPesanan: Date;
+  };
 }
 
 export {};
