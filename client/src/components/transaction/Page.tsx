@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import StatusBadge from './status-badge';
 
 export default function Page() {
-  const { loading, transactions, pagination, pageLoading } = useTransaction();
+  const { loading, transactions, pagination, pageLoading, maxPage } = useTransaction();
   const { page, nextPage, prevPage, limit, setLimit } = pagination;
 
   return loading ? (
@@ -69,10 +69,13 @@ export default function Page() {
         </div>
         <div className="flex justify-end gap-4 items-center">
           {pageLoading && <Loader2 className="animate-spin text-primary" />}
+          <span>
+            Halaman {page} dari {maxPage}
+          </span>
           <Button size="icon" className="shadow-lg" onClick={prevPage} disabled={page === 1 || pageLoading}>
             <ChevronLeft />
           </Button>
-          <Button size="icon" className="shadow-lg" onClick={nextPage} disabled={pageLoading}>
+          <Button size="icon" className="shadow-lg" onClick={nextPage} disabled={page === maxPage || pageLoading}>
             <ChevronRight />
           </Button>
         </div>

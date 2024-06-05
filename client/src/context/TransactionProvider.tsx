@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { debounce } from 'ts-debounce';
 import { Fetch } from '@/api/fetcher';
+import { PaginationState, usePagination } from '@/hooks/usePagination';
 
+// TODO: Debounce should happen on nextPage, prevPage, and setLimit not the fetch itself
 type TransactionContext = {
   // Fetch State
   loading: boolean;
@@ -10,7 +12,8 @@ type TransactionContext = {
   // Revalidate Data
   invalidate: () => Promise<void>;
   pageLoading: boolean;
-  pagination: Pagination;
+  pagination: PaginationState;
+  maxPage: number;
 };
 
 const TransactionCtx = createContext<TransactionContext | undefined>(undefined);
@@ -20,37 +23,13 @@ export const useTransaction = () => {
   return ctx;
 };
 
-type Pagination = {
-  page: number;
-  limit: number;
-  nextPage: () => void;
-  prevPage: () => void;
-  setLimit: (limit: number) => void;
-};
-
 export default function TrasactionProvider({ children }: { children: React.ReactNode }) {
   const [pageLoading, setPageLoading] = useState<boolean>(false);
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    limit: 10,
-    nextPage: () => {
-      setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
-    },
-    prevPage: () => {
-      setPagination((prev) => ({ ...prev, page: prev.page - 1 }));
-    },
-    setLimit: (limit) => {
-      setPagination((prev) => ({ ...prev, limit }));
-    },
-  });
-  const [query, setQuery] = useState<string>(`?page=1&limit=10`);
+  const [maxPage, setMaxPage] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [transactions, setTransactions] = useState<Transaksi[]>([]);
   const [mounted, setMounted] = useState<boolean>(false);
-
-  useEffect(() => {
-    setQuery(`?page=${pagination.page}&limit=${pagination.limit}`);
-  }, [pagination]);
+  const { query, pagination } = usePagination();
 
   useEffect(() => {
     // Non-Debounced Fetch on First Load
@@ -74,8 +53,12 @@ export default function TrasactionProvider({ children }: { children: React.React
     const res = await fetch(`/api/v1/orders${query}&sort=datetime&order=desc`, {
       credentials: 'include',
     });
-    const resBody = (await res.json()) as ApiResponse<Transaksi[]>;
-    setTransactions(resBody.data ?? []);
+    const resBody = (await res.json()) as ApiResponse<{
+      results: Transaksi[];
+      pagination: Pagination;
+    }>;
+    setMaxPage(resBody.data?.pagination.maxPage ?? 0);
+    setTransactions(resBody.data?.results ?? []);
   }
 
   async function invalidate() {
@@ -83,7 +66,7 @@ export default function TrasactionProvider({ children }: { children: React.React
   }
 
   return (
-    <TransactionCtx.Provider value={{ loading, transactions, invalidate, pageLoading, pagination }}>
+    <TransactionCtx.Provider value={{ loading, transactions, invalidate, pageLoading, pagination, maxPage }}>
       {children}
     </TransactionCtx.Provider>
   );

@@ -5,6 +5,13 @@ declare global {
     message?: string;
   };
 
+  type Pagination = {
+    page: number;
+    size: number;
+    totalData: number;
+    maxPage: number;
+  };
+
   type ErrorResponse = {
     error: {
       code: number;
