@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { formatIDR } from '@/lib/formatter';
 
 interface Props {
   menu: Menu;
@@ -20,7 +21,7 @@ export default function MenuCard({ menu }: Props) {
         </div>
         <div className="space-y-4">
           <p className="h-12 leading-tight text-sm text-muted-foreground line-clamp-3">{menu.deskripsi}</p>
-          <p className="font-medium text-end">Rp. {menu.harga}</p>
+          <p className="font-medium text-end">{formatIDR(menu.harga)}</p>
         </div>
       </div>
       {/* Content */}
