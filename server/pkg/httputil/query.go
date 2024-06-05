@@ -10,13 +10,15 @@ import (
 
 type Pagination struct {
 	// Page query field name ?PageQuery=
-	PageQuery string
+	PageQuery string `json:"-"`
 	// Page query value
-	Page int
+	Page int `json:"page"`
 	// Limit query field name ?LimitQuery=
-	LimitQuery string
+	LimitQuery string `json:"-"`
 	// Limit query value
-	Limit int
+	Limit     int `json:"size"`
+	TotalData int `json:"totalData"`
+	MaxPage   int `json:"maxPage"`
 }
 
 type Filter struct {
@@ -148,13 +150,16 @@ func (q *QueryProcessor) Parse(r *http.Request) error {
 }
 
 // Build query string with safety prepared statement arguments placeholder
-func (q *QueryProcessor) Build(baseQuery string) (query string, stmtArgs []interface{}) {
+func (q *QueryProcessor) Build(baseQuery string) (query string, countQuery string, stmtArgs []interface{}) {
 	query = baseQuery
+	countQuery = baseQuery
+
 	stmtCount := 1
 	if q.Filter != nil && q.Filter.Values != nil {
 		clause := " WHERE"
 		for k, v := range q.Filter.Values {
 			query += fmt.Sprintf("%s %s=$%v", clause, k, stmtCount)
+			countQuery += fmt.Sprintf("%s %s=$%v", clause, k, stmtCount)
 			stmtArgs = append(stmtArgs, v)
 			clause = " AND"
 			stmtCount++
@@ -174,5 +179,14 @@ func (q *QueryProcessor) Build(baseQuery string) (query string, stmtArgs []inter
 	}
 
 	slog.Debug("QueryProcessor.Build", slog.Any("query", query), slog.Any("args", stmtArgs))
-	return query, stmtArgs
+	fmt.Println(query)
+	countQuery = fmt.Sprintf("SELECT COUNT(*) FROM (%s) as count", countQuery)
+
+	return query, countQuery, stmtArgs
+}
+
+// Set total data from count query and calculate max page
+func (q *QueryProcessor) SetCount(count int) {
+	q.Pagination.TotalData = count
+	q.Pagination.MaxPage = (count + q.Pagination.Limit - 1) / q.Pagination.Limit
 }

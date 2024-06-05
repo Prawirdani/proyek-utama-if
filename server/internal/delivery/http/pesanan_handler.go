@@ -83,7 +83,10 @@ func (ph PesananHandler) HandleListPesanan(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		return err
 	}
-	resData := ToResponseList(ps, entity.Pesanan.ToResponse)
+	resData := map[string]interface{}{
+		"results":    ToResponseList(ps, entity.Pesanan.ToResponse),
+		"pagination": qProcessor.Pagination,
+	}
 	return response(w, status(http.StatusOK), data(resData))
 }
 

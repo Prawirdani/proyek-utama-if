@@ -36,7 +36,8 @@ func NewPesananRepository(db *pgxpool.Pool, cfg *config.Config) pesananRepositor
 
 func (pr pesananRepository) SelectQuery(ctx context.Context, query model.Query) (*entity.Pesanan, error) {
 	var pesanan entity.Pesanan
-	queryStr, args := query.Build(querySelectPesanan)
+	queryStr, countQuery, args := query.Build(querySelectPesanan)
+	fmt.Println(countQuery)
 
 	row := pr.db.QueryRow(ctx, queryStr, args...)
 	err := pesanan.ScanRow(row)
@@ -112,7 +113,8 @@ func (pr pesananRepository) Insert(ctx context.Context, p entity.Pesanan) (*int,
 func (pr pesananRepository) Select(ctx context.Context, query model.Query) ([]entity.Pesanan, error) {
 	var ps []entity.Pesanan
 
-	queryStr, args := query.Build(querySelectPesanan)
+	queryStr, countQuery, args := query.Build(querySelectPesanan)
+	fmt.Println(countQuery)
 	rows, err := pr.db.Query(ctx, queryStr, args...)
 	if err != nil {
 		return nil, err
@@ -134,6 +136,13 @@ func (pr pesananRepository) Select(ctx context.Context, query model.Query) ([]en
 		p.Detail = append(p.Detail, details...)
 		ps = append(ps, p)
 	}
+
+	var count int
+	if err := pr.db.QueryRow(ctx, countQuery).Scan(&count); err != nil {
+		return nil, err
+	}
+	query.SetCount(count)
+
 	return ps, nil
 }
 
