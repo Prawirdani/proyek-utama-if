@@ -79,6 +79,10 @@ func (u User) GenerateToken(secret string, expiryHour int) (string, error) {
 	return utils.GenerateToken(payload, secret, time.Duration(expiryHour)*time.Hour)
 }
 
+func (u User) IsManajer() bool {
+	return u.Role == Manajer
+}
+
 func (u *User) AssignUpdate(request model.UserUpdateRequest) {
 	u.Nama = request.Nama
 	u.Username = request.Username

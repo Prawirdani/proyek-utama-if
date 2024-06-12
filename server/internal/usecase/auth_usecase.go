@@ -12,7 +12,7 @@ import (
 
 type AuthUseCase interface {
 	Register(ctx context.Context, request model.RegisterRequest) error
-	Login(ctx context.Context, request model.LoginRequest) (string, error)
+	Login(ctx context.Context, request model.LoginRequest, web bool) (string, error)
 }
 
 type authUseCase struct {
@@ -47,7 +47,7 @@ func (u authUseCase) Register(ctx context.Context, request model.RegisterRequest
 	return nil
 }
 
-func (u authUseCase) Login(ctx context.Context, request model.LoginRequest) (string, error) {
+func (u authUseCase) Login(ctx context.Context, request model.LoginRequest, web bool) (string, error) {
 	ctxWT, cancel := context.WithTimeout(ctx, time.Duration(u.cfg.Context.Timeout*int(time.Second)))
 	defer cancel()
 
@@ -56,6 +56,10 @@ func (u authUseCase) Login(ctx context.Context, request model.LoginRequest) (str
 	user, _ := u.userRepo.SelectWhere(ctxWT, "username", request.Username)
 	if err := user.VerifyPassword(request.Password); err != nil {
 		return token, err
+	}
+
+	if web && !user.IsManajer() {
+		return token, entity.ErrorWrongCredentials
 	}
 
 	token, err := user.GenerateToken(u.cfg.Token.SecretKey, u.cfg.Token.Expiry)

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/prawirdani/golang-restapi/config"
@@ -42,6 +43,8 @@ func (h AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) erro
 
 func (h AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) error {
 	var reqBody model.LoginRequest
+	web := strings.ToUpper(r.URL.Query().Get("web")) == "TRUE"
+
 	if err := httputil.BindJSON(r, &reqBody); err != nil {
 		return err
 	}
@@ -50,7 +53,7 @@ func (h AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	tokenString, err := h.userUC.Login(r.Context(), reqBody)
+	tokenString, err := h.userUC.Login(r.Context(), reqBody, web)
 	if err != nil {
 		return err
 	}
