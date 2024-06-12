@@ -1,3 +1,4 @@
+import { MenuCategorySchema } from '@/lib/schemas/menu';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type MenuContext = {
@@ -5,6 +6,12 @@ type MenuContext = {
   menus: Menu[];
   categories: Kategori[];
   invalidate: () => Promise<void>;
+  addMenu(data: FormData): Promise<Response>;
+  updateMenu(id: number, data: FormData): Promise<Response>;
+  deleteMenu(id: number): Promise<Response>;
+  createMenuCategory(data: MenuCategorySchema): Promise<Response>;
+  updateMenuCategory(id: number, data: MenuCategorySchema): Promise<Response>;
+  deleteMenuCategory(id: number): Promise<Response>;
 };
 
 const MenuCtx = createContext<MenuContext | undefined>(undefined);
@@ -43,6 +50,29 @@ export default function MenuProvider({ children }: { children: React.ReactNode }
     setMenus(resBody.data!);
   }
 
+  async function addMenu(data: FormData) {
+    return await fetch('/api/v1/menus', {
+      method: 'POST',
+      body: data,
+      credentials: 'include',
+    });
+  }
+
+  async function updateMenu(id: number, data: FormData) {
+    return await fetch(`/api/v1/menus/${id}`, {
+      method: 'PUT',
+      body: data,
+      credentials: 'include',
+    });
+  }
+
+  async function deleteMenu(id: number) {
+    return await fetch(`/api/v1/menus/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+  }
+
   async function fetchMenuCategories() {
     const res = await fetch('/api/v1/menus/categories', {
       credentials: 'include',
@@ -55,14 +85,48 @@ export default function MenuProvider({ children }: { children: React.ReactNode }
     setCategories(resBody.data!);
   }
 
+  async function createMenuCategory(data: MenuCategorySchema) {
+    return await fetch('/api/v1/menus/categories', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+  }
+
+  async function updateMenuCategory(id: Number, data: MenuCategorySchema) {
+    return await fetch(`/api/v1/menus/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+      credentials: 'include',
+    });
+  }
+
+  async function deleteMenuCategory(id: number) {
+    return await fetch(`/api/v1/menus/categories/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
+  }
+
   async function invalidate() {
-    setLoading(true);
     await Promise.all([fetchMenus(), fetchMenuCategories()]);
-    setLoading(false);
   }
 
   return (
-    <MenuCtx.Provider value={{ loading, menus, categories, invalidate }}>
+    <MenuCtx.Provider
+      value={{
+        loading,
+        menus,
+        categories,
+        invalidate,
+        addMenu,
+        updateMenu,
+        deleteMenu,
+        createMenuCategory,
+        updateMenuCategory,
+        deleteMenuCategory,
+      }}
+    >
       <>{children}</>
     </MenuCtx.Provider>
   );

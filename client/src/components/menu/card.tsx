@@ -3,10 +3,11 @@ import { formatIDR } from '@/lib/formatter';
 
 interface Props {
   menu: Menu;
+  onClick?: () => void;
 }
-export default function MenuCard({ menu }: Props) {
+export default function MenuCard({ menu, onClick }: Props) {
   return (
-    <Card className="shadow-lg hover:cursor-pointer hover:bg-gray-200">
+    <Card className="shadow-lg hover:cursor-pointer hover:bg-gray-200" onClick={onClick}>
       {/* Image */}
       <div className="px-2 pt-2">
         <img className="rounded-lg object-cover aspect-16/9" src={`/api/images/${menu.url}`} alt="" />

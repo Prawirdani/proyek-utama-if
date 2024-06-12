@@ -3,28 +3,26 @@ import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Plus, Loader2, Image } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AddMenuSchema, addMenuSchema } from '@/lib/schemas/menu';
+import { UpdateMenuSchema, updateMenuSchema } from '@/lib/schemas/menu';
 import { useMenu } from '@/context/MenuProvider';
 
-export default function FormAdd() {
-  const [open, setOpen] = useState(false);
+interface Props {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  updateTarget: Menu;
+}
 
-  const { categories, invalidate, addMenu } = useMenu();
-  const form = useForm<AddMenuSchema>({
-    resolver: zodResolver(addMenuSchema),
-    defaultValues: {
-      nama: '',
-      harga: 0,
-      kategori_id: '',
-      deskripsi: '',
-      image: '',
-    },
+export default function FormUpdate({ open, setOpen, updateTarget }: Props) {
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const form = useForm<UpdateMenuSchema>({
+    resolver: zodResolver(updateMenuSchema),
   });
 
   const {
@@ -35,7 +33,9 @@ export default function FormAdd() {
     formState: { isSubmitting, errors },
   } = form;
 
-  const onSubmit = async (data: AddMenuSchema) => {
+  const { categories, invalidate, updateMenu, deleteMenu } = useMenu();
+
+  async function onSubmit(data: UpdateMenuSchema) {
     const formData = new FormData();
     formData.append(
       'data',
@@ -46,20 +46,41 @@ export default function FormAdd() {
         kategoriId: Number(data.kategori_id),
       }),
     );
-    formData.append('image', data.image[0]);
+    if (data.image) {
+      formData.append('image', data.image[0]);
+    }
 
-    const res = await addMenu(formData);
-    if (res.ok) {
-      reset();
-      toast({
-        description: 'Menu berhasil ditambahkan',
-        duration: 2000,
-      });
-      invalidate();
-      setOpen(false);
+    const res = await updateMenu(updateTarget.id, formData);
+    if (!res.ok) {
+      toast({ variant: 'destructive', description: 'Gagal mengupdate menu!' });
       return;
     }
-  };
+
+    toast({
+      description: 'Menu berhasil diupdate!',
+      duration: 2000,
+    });
+    await invalidate();
+    setOpen(false);
+  }
+
+  async function handleDelete() {
+    setDeleteLoading(true);
+    const res = await deleteMenu(updateTarget.id);
+    if (!res.ok) {
+      toast({ variant: 'destructive', description: 'Gagal menghapus menu!' });
+      setDeleteLoading(false);
+      return;
+    }
+    toast({
+      description: 'Menu berhasil dihapus!',
+      duration: 2000,
+    });
+
+    await invalidate();
+    setOpen(false);
+    setDeleteLoading(false);
+  }
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   let imageInputRef: HTMLInputElement;
@@ -79,24 +100,22 @@ export default function FormAdd() {
   };
 
   useEffect(() => {
-    reset();
+    reset({
+      nama: updateTarget.nama ?? '',
+      harga: updateTarget.harga ?? 0,
+      kategori_id: String(updateTarget.kategori?.id) ?? '',
+      deskripsi: updateTarget.deskripsi ?? '',
+    });
     setImagePreview(null);
   }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* Dialog Trigger Button */}
-      <Button className="space-x-1" onClick={() => setOpen(true)}>
-        <Plus />
-        <span>Menu</span>
-      </Button>
-      {/* Dialog Trigger Button */}
-
       <DialogContent className="sm:max-w-[800px]">
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogHeader className="mb-4">
-              <DialogTitle>Tambah menu baru</DialogTitle>
+              <DialogTitle>Update data menu</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-5 gap-4 mb-4">
               <div
@@ -114,9 +133,9 @@ export default function FormAdd() {
                   onChange={imageOnChange}
                 />
                 {imagePreview ? (
-                  <img src={imagePreview} alt="Preview" className="object-fit" />
+                  <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
                 ) : (
-                  <Image className="h-12 w-12" />
+                  <img src={`/api/images/${updateTarget.url}`} className="h-full w-full object-cover" />
                 )}
                 {errors.image && (
                   <span className="mt-2 text-sm text-destructive text-center">{String(errors.image.message)}</span>
@@ -165,7 +184,7 @@ export default function FormAdd() {
                         <Select onValueChange={field.onChange} name={field.name}>
                           <FormControl id="kategori_id">
                             <SelectTrigger>
-                              <SelectValue placeholder="Pilih Kategori" />
+                              <SelectValue placeholder={updateTarget.kategori.nama} defaultValue={field.value} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -200,8 +219,17 @@ export default function FormAdd() {
               </div>
             </div>
 
-            <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                onClick={handleDelete}
+                variant="destructive"
+                disabled={deleteLoading || isSubmitting}
+              >
+                <span>Hapus menu</span>
+                {deleteLoading && <Loader2 className="animate-spin ml-2" />}
+              </Button>
+              <Button type="submit" disabled={isSubmitting || deleteLoading}>
                 {isSubmitting && <Loader2 className="animate-spin mr-2" />}
                 <span>Simpan</span>
               </Button>
