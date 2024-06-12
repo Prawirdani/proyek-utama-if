@@ -1,5 +1,7 @@
 export function formatIDR(number: number): string {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(number);
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(
+    number,
+  );
 }
 
 export function formatDateTime(date: Date): string {
