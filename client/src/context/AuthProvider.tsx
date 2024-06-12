@@ -22,7 +22,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const login = async (username: string, password: string) => {
-    const res = await fetch('/api/v1/auth/login', {
+    const res = await fetch('/api/v1/auth/login?web=true', {
       method: 'POST',
       credentials: 'include',
       body: JSON.stringify({
